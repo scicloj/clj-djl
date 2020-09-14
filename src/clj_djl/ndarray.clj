@@ -4,6 +4,9 @@
 
 (def manager (NDManager/newBaseManager))
 
+(defn shape [m n]
+  (Shape. [m n]))
+
 (defn zeros
   ([shape]
    (.zeros manager shape))
@@ -15,9 +18,6 @@
    (.ones manager shape))
   ([m n]
    (ones (shape m n))))
-
-(defn shape [m n]
-  (Shape. [m n]))
 
 (defn arange [start end]
   (.arange manager start end))
