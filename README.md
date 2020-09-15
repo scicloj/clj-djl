@@ -6,7 +6,11 @@ A Clojure library wrap deep java learning(DJL.ai)
 
 ## Usage
 
-FIXME
+clj-djl is available as a Maven artifact from Clojars.
+
+With Leiningen/Boot:
+
+```[clj-djl "0.1.0"]
 
 ## License
 
