@@ -6,5 +6,7 @@
   :dependencies [[org.clojure/clojure "1.10.0"]
                  ;; https://mvnrepository.com/artifact/ai.djl.mxnet/mxnet-engine
                  [ai.djl/api "0.7.0"]
+                 [ai.djl/model-zoo "0.7.0"]
+                 [ai.djl/basicdataset "0.7.0"]
                  [ai.djl.mxnet/mxnet-engine "0.7.0"]]
   :repl-options {:init-ns clj-djl.core})
