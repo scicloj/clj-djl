@@ -45,11 +45,24 @@
 (defn close [batch]
   (.close batch))
 
+(defn- iter-seq
+([iterable]
+ (iter-seq iterable (.iterator iterable)))
+([iterable iter]
+ (lazy-seq
+  (when (.hasNext iter)
+    (cons (.next iter) (iter-seq iterable iter))))))
+
 (defn iterate-dataset [trainer ds]
-  (iterator-seq (.iterateDataset trainer ds)))
+  (iter-seq (.iterateDataset trainer ds)))
 
 (defn train-batch [trainer batch]
   (EasyTrain/trainBatch trainer batch))
 
+(defmacro as-consumer [f]
+  `(reify java.util.function.Consumer
+     (accept [this arg#]
+       (~f arg#))))
+
 (defn notify-listeners [trainer callback]
-  (.notifyListeners trainer callback))
+  (.notifyListeners trainer (as-consumer callback)))
