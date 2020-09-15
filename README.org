@@ -11,7 +11,7 @@ clj-djl is available as a Maven artifact from Clojars.
 With Leiningen/Boot:
 
 #+begin_src clojure
-[clj-djl "0.1.0"]
+[clj-djl "0.1.1"]
 #+end_src
 
 * License
