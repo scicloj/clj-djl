@@ -1,4 +1,4 @@
-(defproject clj-djl/clj-djl "0.1.1"
+(defproject clj-djl/clj-djl "0.1.2"
   :description "A clojure lib wraps deep java learning(DJL.ai)"
   :url "http://github.com/kimim/clj-djl"
   :license {:name "Apache License, Version 2.0"
@@ -9,4 +9,5 @@
                  [ai.djl/model-zoo "0.7.0"]
                  [ai.djl/basicdataset "0.7.0"]
                  [ai.djl.mxnet/mxnet-engine "0.7.0"]]
+  :main ^:skip-aot clj-djl.core
   :repl-options {:init-ns clj-djl.core})
