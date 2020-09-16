@@ -7,6 +7,15 @@
 (defn shape [m n]
   (Shape. [m n]))
 
+(defn get-shape [ndarray]
+  (.getShape ndarray))
+
+(defn reshape [ndarray new-shape]
+  (.reshape ndarray (long-array new-shape)))
+
+(defn size [ndarray]
+  (.size ndarray))
+
 (defn zeros
   ([shape]
    (.zeros manager shape))
