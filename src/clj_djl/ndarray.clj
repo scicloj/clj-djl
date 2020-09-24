@@ -20,7 +20,9 @@
 (defn reshape [ndarray new-shape]
   (.reshape ndarray (long-array new-shape)))
 
-(defn size [ndarray]
+(defn size
+  "calc the seize of a ndarray."
+  [ndarray]
   (.size ndarray))
 
 (defn scalar? [ndarray]
