@@ -1,6 +1,10 @@
 (ns clj-djl.ndarray
   (:import [ai.djl.ndarray NDArray NDManager]
-           [ai.djl.ndarray.types Shape]))
+           [ai.djl.ndarray.types Shape])
+  (:refer-clojure :exclude [+ - / *
+                            = <= < >= >
+                            identity
+                            min max concat]))
 
 (def manager (NDManager/newBaseManager))
 
@@ -18,6 +22,9 @@
 
 (defn size [ndarray]
   (.size ndarray))
+
+(defn scalar? [ndarray]
+  (.isScalar ndarray))
 
 (defn zeros
   ([col]
