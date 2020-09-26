@@ -40,3 +40,4 @@ jobs:
 
       # run tests!
       - run: lein run
+      - run: lein test
