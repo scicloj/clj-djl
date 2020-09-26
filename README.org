@@ -26,6 +26,15 @@ lein run
 
 Try examples with [[https://github.com/kimim/clj-djl-examples][clj-djl-examples]].
 
+
+* Development
+
+** Unit testing
+
+#+begin_src shell
+lein test
+#+end_src
+
 * License
 
 Copyright © 2020 kimim

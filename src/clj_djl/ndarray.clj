@@ -1,18 +1,25 @@
 (ns clj-djl.ndarray
   (:import [ai.djl.ndarray NDArray NDManager]
-           [ai.djl.ndarray.types Shape])
+           [ai.djl.ndarray.types Shape DataType])
   (:refer-clojure :exclude [+ - / *
                             = <= < >= >
-                            identity
+                            identity to-array
                             min max concat]))
+
+(defn new-base-manager []
+  (NDManager/newBaseManager))
 
 (def manager (NDManager/newBaseManager))
 
 (defn shape
+  ([]
+   (shape []))
   ([col]
    (Shape. col))
   ([m n]
    (shape [m n])))
+
+(def new-shape shape)
 
 (defn get-shape [ndarray]
   (.getShape ndarray))
@@ -40,13 +47,28 @@
   ([m & more]
    (ones (into [m] more))))
 
-(defn arange [start end]
-  (.arange manager start end))
+(defn arange
+  ([stop]
+   (.arange stop))
+  ([start stop]
+   (.arange manager start stop))
+  ([start stop step]
+   (.arange manager start stop step))
+  ([start stop step data-type]
+   (.arange manager start stop step data-type))
+  ([start stop step data-type device]
+   (.arange manager start stop step data-type device)))
 
 (defn create
-  ([shape-col]
-   (.create manager (shape shape-col)))
-  ([col shape-col]
+  ([manager data]
+   (.create manager data))
+  ([manager data shape]
+   (.create manager data shape))
+  #_([manager shape]
+   (.create shape))
+  #_([manager shape data-type]
+   (.create shape data-type))
+  #_([manager col shape-col]
    (.create manager (float-array col) (shape shape-col))))
 
 (defn random-normal
@@ -84,3 +106,22 @@
    (concat array0 array1 :axis 0))
   ([array0 array1 & {axis :axis}]
    (.concat array0 array1 axis)))
+
+(defn get-element [array index]
+  (let [index (long-array index)]
+    (condp clojure.core/= (.getDataType array)
+      DataType/BOOLEAN (.getBoolean array index)
+      DataType/INT8 (.getByte array index)
+      DataType/INT32 (.getInt array index)
+      DataType/INT64 (.getLong array index)
+      DataType/FLOAT32 (.getFloat array index)
+      DataType/FLOAT64 (.getDouble array index))))
+
+(defn to-array [array]
+  (condp clojure.core/= (.getDataType array)
+    DataType/BOOLEAN (.toBooleanArray array)
+    DataType/INT8 (.toByteArray array)
+    DataType/INT32 (.toIntArray array)
+    DataType/INT64 (.toLongArray array)
+    DataType/FLOAT32 (.toFloatArray array)
+    DataType/FLOAT64 (.toDoubleArray array)))
