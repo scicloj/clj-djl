@@ -1,5 +1,5 @@
 (ns clj-djl.ndarray
-  (:import [ai.djl.ndarray NDArray NDManager]
+  (:import [ai.djl.ndarray NDManager NDArray NDList NDArrays]
            [ai.djl.ndarray.types Shape DataType])
   (:refer-clojure :exclude [+ - / *
                             = <= < >= >
@@ -10,6 +10,9 @@
   (NDManager/newBaseManager))
 
 (def manager (NDManager/newBaseManager))
+
+(defn get-device [ndarray]
+  (.getDevice ndarray))
 
 (defn shape
   ([]
@@ -36,27 +39,27 @@
   (.isScalar ndarray))
 
 (defn zeros
-  ([col]
+  ([manager col]
    (.zeros manager (shape col)))
-  ([m & more]
-   (zeros (into [m] more))))
+  ([manager m & more]
+   (zeros manager (into [m] more))))
 
 (defn ones
-  ([col]
+  ([manager col]
    (.ones manager (shape col)))
-  ([m & more]
-   (ones (into [m] more))))
+  ([manager m & more]
+   (ones manager (into [m] more))))
 
 (defn arange
-  ([stop]
-   (.arange stop))
-  ([start stop]
+  ([manager stop]
+   (.arange manager stop))
+  ([manager start stop]
    (.arange manager start stop))
-  ([start stop step]
+  ([manager start stop step]
    (.arange manager start stop step))
-  ([start stop step data-type]
+  ([manager start stop step data-type]
    (.arange manager start stop step data-type))
-  ([start stop step data-type device]
+  ([manager start stop step data-type device]
    (.arange manager start stop step data-type device)))
 
 (defn create
@@ -70,6 +73,12 @@
    (.create shape data-type))
   #_([manager col shape-col]
    (.create manager (float-array col) (shape shape-col))))
+
+(defn new-ndlist [array0 array1]
+  (new NDList [array0 array1]))
+
+(defn stack [col]
+  (NDArrays/stack (NDList. (into-array col))))
 
 (defn random-normal
   ([loc scale shape-col data-type]
