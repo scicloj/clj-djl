@@ -26,5 +26,13 @@
   ([name margin weight]
    (Loss/hingeLoss name margin weight)))
 
+(defn sotfmax-cross-entropy-loss
+  ([]
+   (Loss/softmaxCrossEntropyLoss))
+  ([name]
+   (Loss/softmaxCrossEntropyLoss name))
+  ([name weight class-axis sparse-label from-logit]
+   (Loss/softmaxCrossEntropyLoss name weight class-axis sparse-label from-logit)))
+
 (defn evaluate [loss label pred]
   (.evaluate loss (NDList. [label]) (NDList. [pred])))
