@@ -134,3 +134,8 @@
     DataType/INT64 (.toLongArray array)
     DataType/FLOAT32 (.toFloatArray array)
     DataType/FLOAT64 (.toDoubleArray array)))
+
+(defn to-type [ndarray data-type copy]
+  (condp clojure.core/= (type data-type)
+    java.lang.String (.toType ndarray (DataType/valueOf (.toUpperCase data-type)) copy)
+    DataType (.toType ndarray data-type copy)))

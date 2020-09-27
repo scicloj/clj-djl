@@ -25,7 +25,15 @@
       (def data2D (into-array [data data]))
       (def ndarray (nd/create manager data2D))
       (is (= ndarray (nd/stack [(nd/create manager data) (nd/create manager data)])))
-      )))
+      ;; test boolean
+      (def ndarray (nd/create manager (boolean-array [true false true false]) (nd/new-shape [2 2])))
+      (def expected (nd/create manager (int-array [1 0 1 0]) (nd/new-shape [2 2])))
+      (is (= (nd/to-type ndarray "int32" false) expected))
+      (is (= ndarray (nd/to-type expected "boolean" false)))
+      (is (= (nd/to-type ndarray "INT32" false) expected))
+      (is (= ndarray (nd/to-type expected "BOOLEAN" false)))
+      (is (= (nd/to-type ndarray DataType/INT32 false) expected))
+      (is (= ndarray (nd/to-type expected DataType/BOOLEAN false))))))
 
 (deftest size-test
   (testing "ndarray/size."
