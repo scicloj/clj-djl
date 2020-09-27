@@ -18,5 +18,13 @@
   ([name weight]
    (Loss/l2Loss name weight)))
 
+(defn hinge-loss
+  ([]
+   (Loss/hingeLoss))
+  ([name]
+   (Loss/hingeLoss name))
+  ([name margin weight]
+   (Loss/hingeLoss name margin weight)))
+
 (defn evaluate [loss label pred]
   (.evaluate loss (NDList. [label]) (NDList. [pred])))
