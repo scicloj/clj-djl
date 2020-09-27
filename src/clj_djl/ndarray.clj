@@ -122,15 +122,18 @@
   ([array0 array1 & {axis :axis}]
    (.concat array0 array1 axis)))
 
-(defn get-element [array index]
-  (let [index (long-array index)]
-    (condp clojure.core/= (.getDataType array)
-      DataType/BOOLEAN (.getBoolean array index)
-      DataType/INT8 (.getByte array index)
-      DataType/INT32 (.getInt array index)
-      DataType/INT64 (.getLong array index)
-      DataType/FLOAT32 (.getFloat array index)
-      DataType/FLOAT64 (.getDouble array index))))
+(defn get-element
+  ([array]
+   (get-element array []))
+  ([array index]
+   (let [index (long-array index)]
+     (condp clojure.core/= (.getDataType array)
+       DataType/BOOLEAN (.getBoolean array index)
+       DataType/INT8 (.getByte array index)
+       DataType/INT32 (.getInt array index)
+       DataType/INT64 (.getLong array index)
+       DataType/FLOAT32 (.getFloat array index)
+       DataType/FLOAT64 (.getDouble array index)))))
 
 (defn to-array [array]
   (condp clojure.core/= (.getDataType array)
