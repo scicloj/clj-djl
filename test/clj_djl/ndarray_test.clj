@@ -1,8 +1,7 @@
 (ns clj-djl.ndarray-test
   (:require [clojure.test :refer :all]
             [clj-djl.ndarray :as nd])
-  (:import [ai.djl.ndarray.types Shape DataType]
-           [ai.djl.ndarray NDList NDArrays]))
+  (:import [ai.djl.ndarray.types DataType]))
 
 (deftest creation
   (testing "ndarray/create."
