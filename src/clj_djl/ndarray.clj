@@ -58,9 +58,15 @@
   ([manager start stop step]
    (.arange manager start stop step))
   ([manager start stop step data-type]
-   (.arange manager start stop step data-type))
+   (condp clojure.core/= (type data-type)
+     java.lang.String (.arange manager start stop step
+                               (DataType/valueOf (.toUpperCase data-type)))
+     DataType (.arange manager start stop step data-type)))
   ([manager start stop step data-type device]
-   (.arange manager start stop step data-type device)))
+   (condp clojure.core/= (type data-type)
+     java.lang.String (.arange manager start stop step
+                               (DataType/valueOf (.toUpperCase data-type)) device)
+     DataType (.arange manager start stop step data-type device))))
 
 (defn create
   ([manager data]
@@ -135,7 +141,12 @@
     DataType/FLOAT32 (.toFloatArray array)
     DataType/FLOAT64 (.toDoubleArray array)))
 
-(defn to-type [ndarray data-type copy]
+(defn to-type
+  "convert ndarray to data-type, available options are:
+  \"int8\" \"uint8\" \"int32\" \"int64\"
+  \"float16\" \"float32\" \"float64\"
+  \"boolean\" \"string\" \"unknown\""
+  [ndarray data-type copy]
   (condp clojure.core/= (type data-type)
     java.lang.String (.toType ndarray (DataType/valueOf (.toUpperCase data-type)) copy)
     DataType (.toType ndarray data-type copy)))
