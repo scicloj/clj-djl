@@ -41,8 +41,17 @@
     (def ndm (nd/new-base-manager))
     (def pred  (nd/create ndm (float-array [1 2 3 4 5])))
     (def label (nd/ones ndm [1]))
-    ;; L = \sum {max(0, 0), max(0, -1), max(0 4), max(0, 5), max(0, -4)} = 9; 9/5 = 1.8
     (is (> 1e-4 (Math/abs (- 3.45191431
                              (-> (loss/sotfmax-cross-entropy-loss)
+                                 (loss/evaluate label pred)
+                                 (nd/get-element))))))))
+
+(deftest sigmoid-binary-cross-entropy-loss
+  (testing "sigmoid-binary-cross-entropy loss test"
+    (def ndm (nd/new-base-manager))
+    (def pred  (nd/create ndm (float-array [1 2 3 4 5])))
+    (def label (nd/ones ndm [5]))
+    (is (> 1e-4 (Math/abs (- 0.10272846
+                             (-> (loss/sigmoid-binary-cross-entropy-loss)
                                  (loss/evaluate label pred)
                                  (nd/get-element))))))))

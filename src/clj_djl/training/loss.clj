@@ -34,5 +34,13 @@
   ([name weight class-axis sparse-label from-logit]
    (Loss/softmaxCrossEntropyLoss name weight class-axis sparse-label from-logit)))
 
+(defn sigmoid-binary-cross-entropy-loss
+  ([]
+   (Loss/sigmoidBinaryCrossEntropyLoss))
+  ([name]
+   (Loss/sigmoidBinaryCrossEntropyLoss name))
+  ([name weight from-sigmoid]
+   (Loss/sigmoidBinaryCrossEntropyLoss name weight from-sigmoid)))
+
 (defn evaluate [loss label pred]
   (.evaluate loss (NDList. [label]) (NDList. [pred])))
