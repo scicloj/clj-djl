@@ -55,3 +55,14 @@
                              (-> (loss/sigmoid-binary-cross-entropy-loss)
                                  (loss/evaluate label pred)
                                  (nd/get-element))))))))
+
+#_(deftest masked-softmax-cross-entropy-loss
+  (testing "masked-softmax-cross-entropy loss test"
+    (def ndm (nd/new-base-manager))
+    (def pred  (nd/ones ndm [3 4 10]))
+    (def label (nd/ones ndm [3 4]))
+    (def valid-len (nd/create ndm (int-array [4 2 0])))
+    (is (> 1e-4 (Math/abs (- 3.45191431
+                             (-> (loss/masked-softmax-cross-entropy-loss)
+                                 (loss/evaluate [label valid-len] pred))
+                             (nd/get-element)))))))

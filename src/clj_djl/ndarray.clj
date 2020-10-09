@@ -1,10 +1,12 @@
 (ns clj-djl.ndarray
   (:import [ai.djl.ndarray NDManager NDArray NDList NDArrays]
+           [ai.djl.ndarray.index NDIndex]
            [ai.djl.ndarray.types Shape DataType])
   (:refer-clojure :exclude [+ - / *
                             = <= < >= >
                             identity to-array
-                            min max concat]))
+                            min max concat
+                            get set]))
 
 (defn new-base-manager []
   (NDManager/newBaseManager))
@@ -153,3 +155,14 @@
   (condp clojure.core/= (type data-type)
     java.lang.String (.toType ndarray (DataType/valueOf (.toUpperCase data-type)) copy)
     DataType (.toType ndarray data-type copy)))
+
+(defn set
+  ([array index value]
+   (if (vector? index)
+     (.set array (NDIndex. (long-array index)) value))))
+
+(defn get
+  ([array]
+   (.get array (NDIndex. (long-array []))))
+  ([array index]
+   (.get array (NDIndex. (long-array index)))))
