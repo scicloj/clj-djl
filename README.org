@@ -2,7 +2,7 @@
 
 * clj-djl
 
-A Clojure library wrap deep java learning(DJL.ai)
+A Clojure library wrap deep java library(DJL.ai)
 
 ** Usage
 
