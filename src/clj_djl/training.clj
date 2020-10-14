@@ -16,6 +16,12 @@
 (defn new-training-config [loss]
   (DefaultTrainingConfig. loss))
 
+(defn new-default-training-config [loss]
+  (DefaultTrainingConfig. loss))
+
+(defn opt-initializer [config initializer]
+  (.optInitializer config initializer))
+
 (defn softmax-cross-entropy-loss []
   (Loss/softmaxCrossEntropyLoss))
 

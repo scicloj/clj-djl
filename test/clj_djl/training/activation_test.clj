@@ -5,16 +5,10 @@
             [clj-djl.training :as train]
             [clj-djl.training.loss :as loss]
             [clj-djl.nn :as nn])
-  (:import [ai.djl Model]
-           [ai.djl.training DefaultTrainingConfig]
-           [ai.djl.training.initializer Initializer]
-           [ai.djl.training.loss Loss]
-           [ai.djl.nn Activation]
-           [ai.djl.ndarray.types Shape]
-           [ai.djl.ndarray NDList]))
+  (:import [ai.djl.training.initializer Initializer]))
 
 (with-test
-  (def config (.optInitializer (DefaultTrainingConfig. (loss/l2-loss)) Initializer/ONES))
+  (def config (-> (loss/l2-loss) (train/new-default-training-config) (train/opt-initializer Initializer/ONES)))
   (deftest relu-test
     (try (let [model (model/new-instance "model")]
            (model/set-block model (nn/relu-block))
