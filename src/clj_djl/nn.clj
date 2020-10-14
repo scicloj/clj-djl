@@ -6,3 +6,9 @@
 
 (defn relu [data]
   (Activation/relu data))
+
+(defn sigmoid-block []
+  (Activation/sigmoidBlock))
+
+(defn sigmoid [data]
+  (Activation/sigmoid data))
