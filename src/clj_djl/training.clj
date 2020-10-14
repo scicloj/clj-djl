@@ -7,7 +7,8 @@
            [ai.djl.training.evaluator Accuracy]
            [ai.djl.training.listener TrainingListener LoggingTrainingListener]
            [ai.djl.ndarray.types Shape]
-           [ai.djl.training.dataset Batch]))
+           [ai.djl.training.dataset Batch]
+           [ai.djl.ndarray NDList]))
 
 (defn new-progress-bar []
   (ProgressBar.))
@@ -66,3 +67,9 @@
 
 (defn notify-listeners [trainer callback]
   (.notifyListeners trainer (as-consumer callback)))
+
+(defn get-manager [trainer]
+  (.getManager trainer))
+
+(defn forward [trainer input]
+  (.forward trainer (NDList. input)))

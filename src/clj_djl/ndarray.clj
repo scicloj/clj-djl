@@ -166,3 +166,6 @@
    (.get array (NDIndex. (long-array []))))
   ([array index]
    (.get array (NDIndex. (long-array index)))))
+
+(defn singleton-or-throw [ndlist]
+  (.singletonOrThrow ndlist))
