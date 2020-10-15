@@ -89,9 +89,9 @@
   (NDArrays/stack (NDList. (into-array col))))
 
 (defn random-normal
-  ([loc scale shape-col data-type]
+  ([manager loc scale shape-col data-type]
    (.randomNormal manager loc scale (shape shape-col) data-type))
-  ([shape-col]
+  ([manager shape-col]
    (.randomNormal manager (shape shape-col))))
 
 (defn + [array0 array1]
