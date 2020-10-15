@@ -109,6 +109,9 @@
 (defn ** [array0 array1]
   (.pow array0 array1))
 
+(defn dot [array0 array1]
+  (.dot array0 array1))
+
 (defn = [array0 array1]
   (.eq array0 array1))
 
