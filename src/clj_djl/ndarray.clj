@@ -41,7 +41,7 @@
   (.isScalar ndarray))
 
 (defn zeros
-  ([manager col]
+  ([manager & col]
    (.zeros manager (shape col)))
   ([manager m & more]
    (zeros manager (into [m] more))))
@@ -90,9 +90,23 @@
 
 (defn random-normal
   ([manager loc scale shape-col data-type]
-   (.randomNormal manager loc scale (shape shape-col) data-type))
+   (cond
+     (instance? java.util.Collection shape-col)
+     (.randomNormal manager loc scale (shape shape-col) data-type)
+     (instance? ai.djl.ndarray.types.Shape shape-col)
+     (.randomNormal manager loc scale shape-col data-type)))
+  ([manager loc scale shape-col data-type device]
+   (cond
+     (instance? java.util.Collection shape-col)
+     (.randomNormal manager loc scale (shape shape-col) data-type device)
+     (instance? ai.djl.ndarray.types.Shape shape-col)
+     (.randomNormal manager loc scale shape-col data-type device)))
   ([manager shape-col]
-   (.randomNormal manager (shape shape-col))))
+   (cond
+     (instance? java.util.Collection shape-col)
+     (.randomNormal manager (shape shape-col))
+     (instance? ai.djl.ndarray.types.Shape shape-col)
+     (.randomNormal manager shape-col))))
 
 (defn + [array0 array1]
   (.add array0 array1))
@@ -167,8 +181,23 @@
 (defn get
   ([array]
    (.get array (NDIndex. (long-array []))))
-  ([array index]
-   (.get array (NDIndex. (long-array index)))))
+  ([array indices & more]
+   (cond
+     (instance? java.util.Collection indices)
+     (.get array (NDIndex. (long-array indices)))
+     (instance? java.lang.String indices)
+     (.get array (NDIndex. indices (object-array more)))
+     :else
+     (.get array indices))))
 
 (defn singleton-or-throw [ndlist]
   (.singletonOrThrow ndlist))
+
+(defn head [ndlist]
+  (.head ndlist))
+
+(defn attach-gradient
+  "Attaches a gradient NDArray to this NDArray and marks it so
+  GradientCollector.backward(NDArray) can compute the gradient with respect to it."
+  [ndarray]
+  (.attachGradient ndarray))
