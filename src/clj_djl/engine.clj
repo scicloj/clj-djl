@@ -21,3 +21,6 @@
 
 (defn has-engine [engine-name]
   (Engine/hasEngine engine-name))
+
+(defn new-gradient-collector [engine]
+  (.newGradientCollector engine))

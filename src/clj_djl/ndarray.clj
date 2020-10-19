@@ -41,16 +41,20 @@
   (.isScalar ndarray))
 
 (defn zeros
-  ([manager & col]
-   (.zeros manager (shape col)))
-  ([manager m & more]
-   (zeros manager (into [m] more))))
+  ([manager shape]
+   (.zeros manager (new-shape shape)))
+  ([manager shape data-type]
+   (.zeros manager (new-shape shape) data-type))
+  ([manager shape data-type device]
+   (.zeros manager (new-shape shape) data-type) device))
 
 (defn ones
-  ([manager col]
-   (.ones manager (shape col)))
-  ([manager m & more]
-   (ones manager (into [m] more))))
+  ([manager shape]
+   (.ones manager (new-shape shape)))
+  ([manager shape data-type]
+   (.ones manager (new-shape shape) data-type))
+  ([manager shape data-type device]
+   (.ones manager (new-shape shape) data-type) device))
 
 (defn arange
   ([manager stop]
@@ -82,8 +86,10 @@
   #_([manager col shape-col]
    (.create manager (float-array col) (shape shape-col))))
 
-(defn new-ndlist [array0 array1]
+(defn ndlist [array0 array1]
   (new NDList [array0 array1]))
+
+(def new-ndlist ndlist)
 
 (defn stack [col]
   (NDArrays/stack (NDList. (into-array col))))
@@ -201,3 +207,8 @@
   GradientCollector.backward(NDArray) can compute the gradient with respect to it."
   [ndarray]
   (.attachGradient ndarray))
+
+(defn get-gradient
+  "Returns the gradient NDArray attached to this NDArray."
+  [ndarray]
+  (.getGradient ndarray))
