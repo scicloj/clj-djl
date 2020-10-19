@@ -30,7 +30,11 @@
   (.getShape ndarray))
 
 (defn reshape [ndarray new-shape]
-  (.reshape ndarray (long-array new-shape)))
+  (cond
+    (instance? java.util.Collection new-shape)
+    (.reshape ndarray (long-array new-shape))
+    (instance? ai.djl.ndarray.types.Shape new-shape)
+    (.reshape ndarray new-shape)))
 
 (defn size
   "calc the seize of a ndarray."
@@ -117,11 +121,22 @@
 (defn + [array0 array1]
   (.add array0 array1))
 
+(defn +! [array0 array1]
+  (.addi array0 array1))
+
 (defn - [array0 array1]
   (.sub array0 array1))
 
+(defn -!
+  "substract element wise in place"
+  [array0 array1]
+  (.subi array0 array1))
+
 (defn * [array0 array1]
   (.mul array0 array1))
+
+(defn *! [array0 array1]
+  (.muli array0 array1))
 
 (defn / [array0 array1]
   (.div array0 array1))
@@ -168,6 +183,9 @@
     DataType/INT64 (.toLongArray array)
     DataType/FLOAT32 (.toFloatArray array)
     DataType/FLOAT64 (.toDoubleArray array)))
+
+(defn to-vec [array]
+  (vec (to-array array)))
 
 (defn to-type
   "convert ndarray to data-type, available options are:
