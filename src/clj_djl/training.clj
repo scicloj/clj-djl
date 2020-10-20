@@ -22,6 +22,9 @@
 (defn opt-initializer [config initializer]
   (.optInitializer config initializer))
 
+(defn opt-optimizer [config optimizer]
+  (.optOptimizer config optimizer))
+
 (defn softmax-cross-entropy-loss []
   (Loss/softmaxCrossEntropyLoss))
 
@@ -79,3 +82,6 @@
 
 (defn forward [trainer input]
   (.forward trainer (NDList. input)))
+
+(defn set-metrics [trainer metrics]
+  (.setMetrics trainer metrics))

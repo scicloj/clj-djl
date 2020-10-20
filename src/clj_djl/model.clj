@@ -27,3 +27,9 @@
   (let [model-dir (java.nio.file.Paths/get dir (into-array [""]))]
     (.load model model-dir)
     model))
+
+(defn set-block [model net]
+  (.setBlock model net))
+
+(defn new-trainer [model config]
+  (.newTrainer model config))
