@@ -9,6 +9,9 @@
   (.setBlock model block)
   model)
 
+(defn get-block [model]
+  (.getBlock model))
+
 (defn set-property [model k v]
   (.setProperty model k v)
   model)
@@ -28,8 +31,8 @@
     (.load model model-dir)
     model))
 
-(defn set-block [model net]
-  (.setBlock model net))
-
 (defn new-trainer [model config]
   (.newTrainer model config))
+
+(defn get-parameters [layer]
+  (.getParameters layer))
