@@ -10,9 +10,13 @@
 (defn build [builder]
   (.build builder))
 
-(defn prepare [ds progress]
-  (.prepare ds progress)
-  ds)
+(defn prepare
+  ([ds]
+   (.prepare ds)
+   ds)
+  ([ds progress]
+   (.prepare ds progress)
+   ds))
 
 (defn new-array-dataset-builder []
   (ArrayDataset$Builder.))
@@ -36,3 +40,11 @@
 
 (defn close-batch [batch]
   (.close batch))
+
+(defn opt-usage [builder usage]
+  (.optUsage builder usage)
+  builder)
+
+#_(defn build-dataset [config]
+  (let [{:keys [dataset usage sampling]} config]
+    ))
