@@ -1,6 +1,7 @@
 (ns clj-djl.ndarray-test
   (:require [clojure.test :refer :all]
-            [clj-djl.ndarray :as nd])
+            [clj-djl.ndarray :as nd]
+            [clojure.core.matrix :as matrix])
   (:import [ai.djl.ndarray.types DataType]))
 
 (deftest creation
@@ -37,6 +38,32 @@
     (is (= ndarray (nd/to-type expected DataType/BOOLEAN false)))))
 
 
+(deftest creation-with-vec
+  (testing "ndarray/create with vector"
+    (def ndm (nd/new-base-manager))
+    ;; test 1-dim with 1 element
+    (def ndarray (nd/create ndm [1]))
+    (is (= (nd/new-shape [1]) (nd/get-shape ndarray)))
+    (is (= 1 (count (nd/to-array ndarray))))
+    ;; test 1d
+    (def data (range 0 100))
+    (def ndarray (nd/create ndm data))
+    (is (= ndarray (nd/arange ndm 0 100 1 "int64" (nd/get-device ndarray))))
+    (is (= ndarray (nd/arange ndm 0 100 1 "INT64" (nd/get-device ndarray))))
+    (is (= ndarray (nd/arange ndm 0 100 1 DataType/INT64 (nd/get-device ndarray))))
+    ;; test 2d
+    (def data2D [data data])
+    (def ndarray (nd/create ndm data2D))
+    (is (= ndarray (nd/stack [(nd/create ndm data) (nd/create ndm data)])))
+    ;; test boolean
+    (def ndarray (nd/create ndm [true false true false] [2 2]))
+    (def expected (nd/create ndm (int-array [1 0 1 0]) (nd/shape [2 2])))
+    (is (= (nd/to-type ndarray "int32" false) expected))
+    (is (= ndarray (nd/to-type expected "boolean" false)))
+    (is (= (nd/to-type ndarray "INT32" false) expected))
+    (is (= ndarray (nd/to-type expected "BOOLEAN" false)))
+    (is (= (nd/to-type ndarray DataType/INT32 false) expected))
+    (is (= ndarray (nd/to-type expected DataType/BOOLEAN false)))))
 
 (deftest size-test
   (testing "ndarray/size."

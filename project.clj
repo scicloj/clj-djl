@@ -14,6 +14,7 @@
                  [ai.djl.mxnet/mxnet-engine "0.8.0"]
                  [ai.djl.mxnet/mxnet-native-auto "1.7.0-backport"]
 
+                 [net.mikera/core.matrix "0.62.0"]
                  ;;[ai.djl.pytorch/pytorch-engine "0.8.0"]
                  ;;[ai.djl.pytorch/pytorch-native-auto "1.6.0"]
 

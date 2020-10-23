@@ -1,4 +1,5 @@
 (ns clj-djl.ndarray
+  (:require [clojure.core.matrix :as matrix])
   (:import [ai.djl.ndarray NDManager NDArray NDList NDArrays]
            [ai.djl.ndarray.index NDIndex]
            [ai.djl.ndarray.types Shape DataType])
@@ -78,7 +79,34 @@
                                (DataType/valueOf (.toUpperCase data-type)) device)
      DataType (.arange manager start stop step data-type device))))
 
-(defn create
+
+(defmulti create
+  (fn [manager data & more]
+    (sequential? data)))
+
+(defmethod create :default
+  ([manager data]
+   (.create manager data))
+  ([manager data1 data2]
+   (.create manager data1 data2))
+  ([manager data1 data2 data3]
+   (.create manager data1 data2 data3)))
+
+(defmethod create true
+  ([manager data]
+   (let [shape-col (long-array (matrix/shape data))]
+     (create manager data shape-col)))
+  ([manager data shape-col]
+   (let [flat (flatten data)]
+     (condp clojure.core/= (type (first flat))
+       java.lang.Boolean (.create manager (boolean-array flat) (shape shape-col))
+       java.lang.Byte (.create manager (byte-array flat) (shape shape-col))
+       java.lang.Integer (.create manager (int-array flat) (shape shape-col))
+       java.lang.Long (.create manager (long-array flat) (shape shape-col))
+       java.lang.Float (.create manager (float-array flat) (shape shape-col))
+       java.lang.Double (.create manager (double-array flat) (shape shape-col))))))
+
+#_(defn create
   ([manager data]
    (.create manager data))
   ([manager data shape]
