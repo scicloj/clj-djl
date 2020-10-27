@@ -63,7 +63,17 @@
     (is (= (nd/to-type ndarray "INT32" false) expected))
     (is (= ndarray (nd/to-type expected "BOOLEAN" false)))
     (is (= (nd/to-type ndarray DataType/INT32 false) expected))
-    (is (= ndarray (nd/to-type expected DataType/BOOLEAN false)))))
+    (is (= ndarray (nd/to-type expected DataType/BOOLEAN false)))
+
+    (def ndarray1 (nd/create ndm (map int [1 0 1 0]) [2 2]))
+    (def ndarray2 (nd/create ndm (int-array [1 0 1 0]) [2 2]))
+    (def ndarray3 (nd/create ndm (int-array [1 0 1 0]) (nd/shape [2 2])))
+    (is (= ndarray1 ndarray2 ndarray3))
+
+    (def ndarray1 (nd/create ndm [1 0 1 0] [2 2]))
+    (def ndarray2 (nd/create ndm (long-array [1 0 1 0]) [2 2]))
+    (def ndarray3 (nd/create ndm (long-array [1 0 1 0]) (nd/shape [2 2])))
+    (is (= ndarray1 ndarray2 ndarray3))))
 
 (deftest size-test
   (testing "ndarray/size."

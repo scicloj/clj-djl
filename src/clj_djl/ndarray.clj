@@ -88,35 +88,30 @@
   ([manager data]
    (.create manager data))
   ([manager data1 data2]
-   (.create manager data1 data2))
+   (let [param2 (if (sequential? data2)
+                  (shape data2)
+                  data2)]
+     (.create manager data1 param2)))
   ([manager data1 data2 data3]
    (.create manager data1 data2 data3)))
 
 (defmethod create true
   ([manager data]
-   (let [shape-col (long-array (matrix/shape data))]
-     (create manager data shape-col)))
-  ([manager data shape-col]
-   (let [flat (flatten data)]
+   (let [param-shape (new-shape (long-array (matrix/shape data)))]
+     (create manager data param-shape)))
+  ([manager param1 param2]
+   (let [flat (flatten param1)
+         param-shape (if (sequential? param2)
+                       (shape param2)
+                       param2)]
      (condp clojure.core/= (type (first flat))
-       java.lang.Boolean (.create manager (boolean-array flat) (shape shape-col))
-       java.lang.Byte (.create manager (byte-array flat) (shape shape-col))
-       java.lang.Integer (.create manager (int-array flat) (shape shape-col))
-       java.lang.Long (.create manager (long-array flat) (shape shape-col))
-       java.lang.Float (.create manager (float-array flat) (shape shape-col))
-       java.lang.Double (.create manager (double-array flat) (shape shape-col))))))
+       java.lang.Boolean (.create manager (boolean-array flat) param-shape)
+       java.lang.Byte (.create manager (byte-array flat) param-shape)
+       java.lang.Integer (.create manager (int-array flat) param-shape)
+       java.lang.Long (.create manager (long-array flat) param-shape)
+       java.lang.Float (.create manager (float-array flat) param-shape)
+       java.lang.Double (.create manager (double-array flat) param-shape)))))
 
-#_(defn create
-  ([manager data]
-   (.create manager data))
-  ([manager data shape]
-   (.create manager data shape))
-  #_([manager shape]
-   (.create shape))
-  #_([manager shape data-type]
-   (.create shape data-type))
-  #_([manager col shape-col]
-   (.create manager (float-array col) (shape shape-col))))
 
 (defn ndlist [array0 array1]
   (new NDList [array0 array1]))
