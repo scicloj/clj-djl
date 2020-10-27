@@ -1,8 +1,10 @@
 (ns clj-djl.ndarray-test
   (:require [clojure.test :refer :all]
             [clj-djl.ndarray :as nd]
+            [clj-djl.utils :refer :all]
             [clojure.core.matrix :as matrix])
-  (:import [ai.djl.ndarray.types DataType]))
+  (:import [ai.djl.ndarray.types DataType]
+           [java.nio FloatBuffer]))
 
 (deftest creation
   (testing "ndarray/create."
@@ -74,6 +76,54 @@
     (def ndarray2 (nd/create ndm (long-array [1 0 1 0]) [2 2]))
     (def ndarray3 (nd/create ndm (long-array [1 0 1 0]) (nd/shape [2 2])))
     (is (= ndarray1 ndarray2 ndarray3))))
+
+(deftest create-csr-matrix
+  (testing "create CSR matrix"
+    (try-let [ndm (nd/new-base-manager)]
+             (let [expected (float-array [7 8 9])
+                   buf (FloatBuffer/wrap expected)
+                   indptr (long-array [0 2 2 3])
+                   indices (long-array [0 2 1])
+                   nd (.createCSR ndm buf indptr indices (nd/shape 3 4))
+                   array (.toFloatArray nd)]
+               (is (= (aget array 0) (aget expected 0)))
+               (is (= (aget array 2) (aget expected 1)))
+               (is (= (aget array 9) (aget expected 2)))
+               (is (.isSparse nd))))
+    ;; generalized
+    (try-let [ndm (nd/new-base-manager)]
+             (let [expected [7 8 9]
+                   buf [7 8 9]
+                   indptr (long-array [0 2 2 3])
+                   indices (long-array [0 2 1])
+                   nd (nd/create-csr ndm buf indptr indices (nd/shape 3 4))
+                   array (nd/to-array nd)]
+               (is (= (aget array 0) (expected 0)))
+               (is (= (aget array 2) (expected 1)))
+               (is (= (aget array 9) (expected 2)))
+               (is (nd/sparse? nd))))
+
+    (try-let [ndm (nd/new-base-manager)]
+             (let [expected [7 8 9]
+                   buf [7 8 9]
+                   indptr [0 2 2 3]
+                   indices [0 2 1]
+                   shape [3 4]
+                   nd (nd/create-csr ndm buf indptr indices shape)
+                   array (nd/to-array nd)]
+               (is (= (aget array 0) (expected 0)))
+               (is (= (aget array 2) (expected 1)))
+               (is (= (aget array 9) (expected 2)))
+               (is (nd/sparse? nd))))
+
+    (try-let [ndm (nd/new-base-manager)]
+             (let [expected [7 8 9]
+                   nd (nd/create-csr ndm [7 8 9] [0 2 2 3] [0 2 1] [3 4])
+                   array (nd/to-vec nd)]
+               (is (= (array 0) (expected 0)))
+               (is (= (array 2) (expected 1)))
+               (is (= (array 9) (expected 2)))
+               (is (nd/sparse? nd))))))
 
 (deftest size-test
   (testing "ndarray/size."

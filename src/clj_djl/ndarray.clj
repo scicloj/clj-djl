@@ -2,7 +2,8 @@
   (:require [clojure.core.matrix :as matrix])
   (:import [ai.djl.ndarray NDManager NDArray NDList NDArrays]
            [ai.djl.ndarray.index NDIndex]
-           [ai.djl.ndarray.types Shape DataType])
+           [ai.djl.ndarray.types Shape DataType]
+           [java.nio ByteBuffer IntBuffer LongBuffer FloatBuffer DoubleBuffer])
   (:refer-clojure :exclude [+ - / *
                             = <= < >= >
                             identity to-array
@@ -112,6 +113,26 @@
        java.lang.Float (.create manager (float-array flat) param-shape)
        java.lang.Double (.create manager (double-array flat) param-shape)))))
 
+(defn create-csr [manager data indptr indices shape & device]
+  (let [data (if (sequential? data)
+               (condp clojure.core/= (type (first data))
+                 java.lang.Byte (ByteBuffer/wrap (byte-array data))
+                 java.lang.Integer (IntBuffer/wrap (int-array data))
+                 java.lang.Long (LongBuffer/wrap (long-array data))
+                 java.lang.Float (FloatBuffer/wrap (float-array data))
+                 java.lang.Double (DoubleBuffer/wrap (double-array data)))
+               data)
+        indptr (if (sequential? indptr) (long-array indptr) indptr)
+        indices (if (sequential? indices) (long-array indices) indices)
+        shape (if (sequential? shape) (new-shape shape) shape)]
+    (if (nil? device)
+      (.createCSR manager data indptr indices shape)
+      (.createCSR manager data indptr indices shape (first device)))))
+
+(defn is-sparse [ndarray]
+  (.isSparse ndarray))
+
+(def sparse? is-sparse)
 
 (defn ndlist [array0 array1]
   (new NDList [array0 array1]))
