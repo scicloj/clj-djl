@@ -20,6 +20,7 @@
                         result (nd/singleton-or-throw (train/forward trainer [data]))]
                     (is (= expected (nn/relu data)))
                     (is (= expected result))))))))
+
   (deftest sigmoid-test
     (try (let [model (model/new-instance "model")]
            (model/set-block model (nn/sigmoid-block))
@@ -29,4 +30,15 @@
                         expected (nd/create manager (float-array [0.5]))
                         result (nd/singleton-or-throw (train/forward trainer [data]))]
                     (is (= expected (nn/sigmoid data)))
-                    (is (= expected result)))))))))
+                    (is (= expected result))))))))
+
+  (deftest tanh-test
+    (try (let [model (model/new-instance "model")]
+           (model/set-block model (nn/tanh-block))
+           (let [trainer (train/new-trainer model config)]
+             (let [manager (train/get-manager trainer)
+                   data (nd/create manager (float-array [0]))
+                   expected (nd/create manager (float-array [0]))
+                   result (nd/singleton-or-throw (train/forward trainer [data]))]
+               (is (= expected (nn/tanh data)))
+               (is (= expected result))))))))

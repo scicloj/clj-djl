@@ -15,6 +15,12 @@
 (defn sigmoid [data]
   (Activation/sigmoid data))
 
+(defn tanh-block []
+  (Activation/tanhBlock))
+
+(defn tanh [data]
+  (Activation/tanh data))
+
 (defn sequential-block []
   (SequentialBlock.))
 
