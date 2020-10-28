@@ -1,13 +1,35 @@
 (ns clj-djl.ndindex-test
   (:require [clojure.test :refer :all]
-            [clj-djl.ndarray :as nd]))
+            [clj-djl.ndarray :as nd]
+            [clj-djl.utils :refer :all]))
 
 (deftest empty-index
-  (testing "empty ndindex"
-    (def ndm (nd/new-base-manager))
-    (def original (nd/create ndm (float-array [1. 2. 3. 4.]) (nd/new-shape [2 2])))
-    (is (= (nd/get original) original))
-    (is (= (nd/get original []) original))))
+  (try-let [ndm (nd/new-base-manager)
+            original (nd/create ndm [1. 2. 3. 4.] [2 2])]
+           (is (= (nd/get original) original))
+           (is (= (nd/get original []) original))))
+
+(deftest fixed-negative-index
+  (try-let [ndm (nd/new-base-manager)
+            original (nd/create ndm [1. 2. 3. 4.] [4])
+            expected (nd/create ndm 4.)
+            actual (nd/get original "-1")]
+           (is (= actual expected))))
+
+(deftest pick
+  (try-let [ndm (nd/new-base-manager)
+            original (nd/create ndm [1. 2. 3. 4.] [2 2])
+            expected (nd/create ndm [1. 4.] [2 1])
+            actual (nd/get original (-> (nd/new-ndindex)
+                                        (.addAllDim)
+                                        (.addPickDim (nd/create ndm [0 1]))))]
+           (is (= actual expected))))
+
+(deftest get
+  (try-let [ndm (nd/new-base-manager)
+            original (nd/create ndm [1. 2. 3. 4.] [2 2])]
+           (is (= (nd/get original (nd/ndindex)) original))))
+
 
 (deftest set-array
   (testing "set array"

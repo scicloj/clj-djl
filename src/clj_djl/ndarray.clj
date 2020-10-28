@@ -318,3 +318,8 @@
 
 (defn pp [array]
   (println (str array)))
+
+(defn ndindex []
+  (NDIndex.))
+
+(def new-ndindex ndindex)
