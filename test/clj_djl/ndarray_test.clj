@@ -75,7 +75,8 @@
     (def ndarray1 (nd/create ndm [1 0 1 0] [2 2]))
     (def ndarray2 (nd/create ndm (long-array [1 0 1 0]) [2 2]))
     (def ndarray3 (nd/create ndm (long-array [1 0 1 0]) (nd/shape [2 2])))
-    (is (= ndarray1 ndarray2 ndarray3))))
+    (def ndarray4 (nd/create ndm [[1 0] [1 0]]))
+    (is (= ndarray1 ndarray2 ndarray3 ndarray4))))
 
 (deftest create-csr-matrix
   (testing "create CSR matrix"

@@ -46,21 +46,36 @@
 (defn scalar? [ndarray]
   (.isScalar ndarray))
 
+(def datatype-map {:int8 DataType/INT8
+                   :int32 DataType/INT32
+                   :int64 DataType/INT64
+                   :float16 DataType/FLOAT16
+                   :float32 DataType/FLOAT32
+                   :float64 DataType/FLOAT64})
+
 (defn zeros
   ([manager shape]
    (.zeros manager (new-shape shape)))
   ([manager shape data-type]
-   (.zeros manager (new-shape shape) data-type))
+   (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
+         local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.zeros manager local-shape local-data-type)))
   ([manager shape data-type device]
-   (.zeros manager (new-shape shape) data-type) device))
+   (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
+         local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.zeros manager local-shape local-data-type)) device))
 
 (defn ones
   ([manager shape]
    (.ones manager (new-shape shape)))
   ([manager shape data-type]
-   (.ones manager (new-shape shape) data-type))
+   (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
+         local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.ones manager local-shape local-data-type)))
   ([manager shape data-type device]
-   (.ones manager (new-shape shape) data-type) device))
+   (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
+         local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.ones manager local-shape local-data-type)) device))
 
 (defn arange
   ([manager stop]
@@ -218,8 +233,13 @@
 (defn exp [array0]
   (.exp array0))
 
-(defn sum [array0]
-  (.sum array0))
+(defn sum
+  ([array]
+   (.sum array))
+  ([array axes]
+   (.sum array (int-array axes)))
+  ([array axes keep-dims]
+   (.sum array (int-array axes) keep-dims)))
 
 (defn concat
   ([array0 array1]
@@ -295,3 +315,6 @@
   "Returns the gradient NDArray attached to this NDArray."
   [ndarray]
   (.getGradient ndarray))
+
+(defn pp [array]
+  (println (str array)))
