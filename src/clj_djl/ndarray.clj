@@ -134,8 +134,8 @@
 
 (def sparse? is-sparse)
 
-(defn ndlist [array0 array1]
-  (new NDList [array0 array1]))
+(defn ndlist [arrays]
+  (new NDList arrays))
 
 (def new-ndlist ndlist)
 
@@ -161,6 +161,27 @@
      (.randomNormal manager (shape shape-col))
      (instance? ai.djl.ndarray.types.Shape shape-col)
      (.randomNormal manager shape-col))))
+
+(defmulti random-uniform
+  (fn [manager low high shape & [data-type device]]
+    (sequential? shape)))
+
+(defmethod random-uniform true
+  ([manager low high shape]
+   (.randomUniform manager low high (new-shape shape)))
+  ([manager low high shape data-type]
+   (.randomUniform manager low high (new-shape shape) data-type))
+  ([manager low high shape data-type device]
+   (.randomUniform manager low high (new-shape shape) data-type device)))
+
+(defmethod random-uniform :default
+  ([manager low high shape]
+   (.randomUniform manager low high shape))
+  ([manager low high shape data-type]
+   (.randomUniform manager low high shape data-type))
+  ([manager low high shape data-type device]
+   (.randomUniform manager low high shape data-type device)))
+
 
 (defn + [array0 array1]
   (.add array0 array1))

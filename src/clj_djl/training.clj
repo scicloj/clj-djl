@@ -1,7 +1,7 @@
 (ns clj-djl.training
   (:import [ai.djl.training.util ProgressBar]
            [ai.djl.training.dataset RandomAccessDataset]
-           [ai.djl.training DefaultTrainingConfig TrainingConfig]
+           [ai.djl.training DefaultTrainingConfig TrainingConfig ParameterStore]
            [ai.djl.training.loss Loss]
            [ai.djl.training EasyTrain]
            [ai.djl.training.evaluator Accuracy]
@@ -85,3 +85,6 @@
 
 (defn set-metrics [trainer metrics]
   (.setMetrics trainer metrics))
+
+(defn parameter-store [manager copy]
+  (ParameterStore. manager copy))
