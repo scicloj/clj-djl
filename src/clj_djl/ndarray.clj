@@ -284,8 +284,13 @@
 
 (defn set
   ([array index value]
-   (if (vector? index)
-     (.set array (NDIndex. (long-array index)) value))))
+   (cond
+     (sequential? index)
+     (.set array (NDIndex. (long-array index)) value)
+     (string? index)
+     (.set array (NDIndex. index (object-array [])) value)
+     :else
+     (.set array index value))))
 
 (defn get
   ([array]
