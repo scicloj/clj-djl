@@ -292,6 +292,8 @@
    (.get array (NDIndex. (long-array []))))
   ([array indices & more]
    (cond
+     (instance? java.lang.Long indices)
+     (.get array (long-array [indices]))
      (instance? java.util.Collection indices)
      (.get array (NDIndex. (long-array indices)))
      (instance? java.lang.String indices)

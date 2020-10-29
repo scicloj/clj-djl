@@ -3,20 +3,20 @@
             [clj-djl.ndarray :as nd]
             [clj-djl.utils :refer :all]))
 
-(deftest empty-index
+(deftest empty-index-test
   (try-let [ndm (nd/new-base-manager)
             original (nd/create ndm [1. 2. 3. 4.] [2 2])]
            (is (= (nd/get original) original))
            (is (= (nd/get original []) original))))
 
-(deftest fixed-negative-index
+(deftest fixed-negative-index-test
   (try-let [ndm (nd/new-base-manager)
             original (nd/create ndm [1. 2. 3. 4.] [4])
             expected (nd/create ndm 4.)
             actual (nd/get original "-1")]
            (is (= actual expected))))
 
-(deftest pick
+(deftest pick-test
   (try-let [ndm (nd/new-base-manager)
             original (nd/create ndm [1. 2. 3. 4.] [2 2])
             expected (nd/create ndm [1. 4.] [2 1])
@@ -25,11 +25,40 @@
                                         (.addPickDim (nd/create ndm [0 1]))))]
            (is (= actual expected))))
 
-(deftest get
+(deftest get-test
   (try-let [ndm (nd/new-base-manager)
             original (nd/create ndm [1. 2. 3. 4.] [2 2])]
-           (is (= (nd/get original (nd/ndindex)) original))))
+           (is (= (nd/get original (nd/ndindex)) original))
 
+           (let [get-at (nd/get original 0)
+                 expected (nd/create ndm [1. 2.])]
+             (is (= get-at expected))
+             (is (= (nd/get original "0,:") expected))
+             (is (= (nd/get original "0,*") expected)))
+
+           (let [get-slice (nd/get original "1:")
+                 get-step-slice (nd/get original "1::2")
+                 expected (nd/create ndm [3. 4.] [1 2])]
+             (is (= get-slice expected))
+             (is (= get-step-slice expected)))
+           (let [original (-> (nd/arange ndm 120) (nd/reshape [2 3 4 5]))]
+             (let [get-ellipsis (nd/get original "0,2, ... ")
+                   expected (-> (nd/arange ndm 40 60) (nd/reshape [4 5]))]
+               (is (= expected get-ellipsis)))
+             (let [get-ellipsis (nd/get original "...,0:2,2")
+                   expected (-> (nd/create ndm [(int 2), 7, 22, 27, 42, 47, 62, 67, 82, 87, 102, 107])
+                                (nd/reshape [2 3 2]))]
+               (is (= expected get-ellipsis)))
+             (let [get-ellipsis (nd/get original "1,...,2,3:5,2")
+                   expected (-> (nd/create ndm [(int 73) 93 113])
+                                (nd/reshape [3 1]))]
+               (is (= expected get-ellipsis)))
+             (let [get-ellipsis (nd/get original "...")]
+               (is (= get-ellipsis original))))
+           (let [original (-> (nd/arange ndm 10) (nd/reshape [2 5]))
+                 bool (nd/create [true false])
+                 expected (-> (nd/arange ndm 5) (nd/reshape [1 5]))]
+             (is (= (.get original bool) expected)))))
 
 (deftest set-array
   (testing "set array"
