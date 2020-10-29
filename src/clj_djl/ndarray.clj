@@ -280,6 +280,7 @@
   [ndarray data-type copy]
   (condp clojure.core/= (type data-type)
     java.lang.String (.toType ndarray (DataType/valueOf (.toUpperCase data-type)) copy)
+    clojure.lang.Keyword (.toType ndarray (DataType/valueOf (.toUpperCase (name data-type))) copy)
     DataType (.toType ndarray data-type copy)))
 
 (defn set
