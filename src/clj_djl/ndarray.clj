@@ -331,3 +331,6 @@
   (NDIndex.))
 
 (def new-ndindex ndindex)
+
+(defn log-softmax [ndarray axis]
+  (.logSoftmax ndarray axis))
