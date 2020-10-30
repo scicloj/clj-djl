@@ -55,7 +55,7 @@
 (defn close [batch]
   (.close batch))
 
-(defn- iter-seq
+(defn iter-seq
 ([iterable]
  (iter-seq iterable (.iterator iterable)))
 ([iterable iter]
