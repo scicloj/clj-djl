@@ -77,7 +77,54 @@
          local-shape (if (sequential? shape) (new-shape shape) shape)]
      (.ones manager local-shape local-data-type)) device))
 
-(defn arange
+(defmulti arange (fn [manager start-or-stop & more]
+                   (type start-or-stop)))
+
+(defmethod arange java.lang.Double
+  ([manager stop]
+   (.arange manager (float stop)))
+  ([manager start stop]
+   (.arange manager (float start) (float stop)))
+  ([manager start stop step]
+   (.arange manager (float start) (float stop) (float step)))
+  ([manager start stop step data-type]
+   (condp clojure.core/= (type data-type)
+     java.lang.String (.arange manager (float start) (float stop) (float step)
+                               (DataType/valueOf (.toUpperCase data-type)))
+     clojure.lang.Keyword (.arange manager (float start) (float stop) (float step)
+                                   (DataType/valueOf (.toUpperCase (name data-type))))
+     DataType (.arange manager (float start) (float stop) (float step) data-type)))
+  ([manager start stop step data-type device]
+   (condp clojure.core/= (type data-type)
+     java.lang.String (.arange manager (float start) (float stop) (float step)
+                               (DataType/valueOf (.toUpperCase data-type)))
+     clojure.lang.Keyword (.arange manager (float start) (float stop) (float step)
+                                   (DataType/valueOf (.toUpperCase (name data-type))) device)
+     DataType (.arange manager (float start) (float stop) (float step) data-type device))))
+
+(defmethod arange java.lang.Long
+  ([manager stop]
+   (.arange manager (int stop)))
+  ([manager start stop]
+   (.arange manager (int start) (int stop)))
+  ([manager start stop step]
+   (.arange manager (int start) (int stop) (int step)))
+  ([manager start stop step data-type]
+   (condp clojure.core/= (type data-type)
+     java.lang.String (.arange manager (int start) (int stop) (int step)
+                               (DataType/valueOf (.toUpperCase data-type)))
+     clojure.lang.Keyword (.arange manager (int start) (int stop) (int step)
+                                   (DataType/valueOf (.toUpperCase (name data-type))))
+     DataType (.arange manager (int start) (int stop) (int step) data-type)))
+  ([manager start stop step data-type device]
+   (condp clojure.core/= (type data-type)
+     java.lang.String (.arange manager (int start) (int stop) (int step)
+                               (DataType/valueOf (.toUpperCase data-type)))
+     clojure.lang.Keyword (.arange manager (int start) (int stop) (int step)
+                                   (DataType/valueOf (.toUpperCase (name data-type))) device)
+     DataType (.arange manager (int start) (int stop) (int step) data-type device))))
+
+(defmethod arange :default
   ([manager stop]
    (.arange manager stop))
   ([manager start stop]
@@ -86,14 +133,18 @@
    (.arange manager start stop step))
   ([manager start stop step data-type]
    (condp clojure.core/= (type data-type)
-     java.lang.String (.arange manager start stop step
+     java.lang.String (.arange manager (int start) (int stop) (int step)
                                (DataType/valueOf (.toUpperCase data-type)))
-     DataType (.arange manager start stop step data-type)))
+     clojure.lang.Keyword (.arange manager (int start) (int stop) (int step)
+                                   (DataType/valueOf (.toUpperCase (name data-type))))
+     DataType (.arange manager (int start) (int stop) (int step) data-type)))
   ([manager start stop step data-type device]
    (condp clojure.core/= (type data-type)
-     java.lang.String (.arange manager start stop step
-                               (DataType/valueOf (.toUpperCase data-type)) device)
-     DataType (.arange manager start stop step data-type device))))
+     java.lang.String (.arange manager (int start) (int stop) (int step)
+                               (DataType/valueOf (.toUpperCase data-type)))
+     clojure.lang.Keyword (.arange manager (int start) (int stop) (int step)
+                                   (DataType/valueOf (.toUpperCase (name data-type))) device)
+     DataType (.arange manager (int start) (int stop) (int step) data-type device))))
 
 
 (defmulti create
