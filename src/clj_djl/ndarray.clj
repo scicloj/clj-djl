@@ -3,6 +3,7 @@
   (:import [ai.djl.ndarray NDManager NDArray NDList NDArrays]
            [ai.djl.ndarray.index NDIndex]
            [ai.djl.ndarray.types Shape DataType]
+           [ai.djl Device]
            [java.nio ByteBuffer IntBuffer LongBuffer FloatBuffer DoubleBuffer])
   (:refer-clojure :exclude [+ - / *
                             = <= < >= >
@@ -17,6 +18,9 @@
 
 (defn get-device [ndarray]
   (.getDevice ndarray))
+
+(defn default-device []
+  (Device/defaultDevice))
 
 (defn shape
   ([]
@@ -157,19 +161,27 @@
 (defn stack [col]
   (NDArrays/stack (NDList. (into-array col))))
 
+(defn- get-datatype [data-type]
+  (condp clojure.core/= (type data-type)
+    java.lang.String (DataType/valueOf (.toUpperCase data-type))
+    clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name data-type)))
+    DataType data-type))
+
 (defn random-normal
   ([manager loc scale shape-col data-type]
-   (cond
-     (instance? java.util.Collection shape-col)
-     (.randomNormal manager loc scale (shape shape-col) data-type)
-     (instance? ai.djl.ndarray.types.Shape shape-col)
-     (.randomNormal manager loc scale shape-col data-type)))
+   (let [data-type (get-datatype data-type)]
+     (cond
+       (instance? java.util.Collection shape-col)
+       (.randomNormal manager loc scale (shape shape-col) data-type)
+       (instance? ai.djl.ndarray.types.Shape shape-col)
+       (.randomNormal manager loc scale shape-col data-type))))
   ([manager loc scale shape-col data-type device]
-   (cond
-     (instance? java.util.Collection shape-col)
-     (.randomNormal manager loc scale (shape shape-col) data-type device)
-     (instance? ai.djl.ndarray.types.Shape shape-col)
-     (.randomNormal manager loc scale shape-col data-type device)))
+   (let [data-type (get-datatype data-type)]
+     (cond
+       (instance? java.util.Collection shape-col)
+       (.randomNormal manager loc scale (shape shape-col) data-type device)
+       (instance? ai.djl.ndarray.types.Shape shape-col)
+       (.randomNormal manager loc scale shape-col data-type device))))
   ([manager shape-col]
    (cond
      (instance? java.util.Collection shape-col)

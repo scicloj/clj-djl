@@ -1,4 +1,5 @@
 (ns clj-djl.training
+  (:require [clj-djl.engine :as engine])
   (:import [ai.djl.training.util ProgressBar]
            [ai.djl.training.dataset RandomAccessDataset]
            [ai.djl.training DefaultTrainingConfig TrainingConfig ParameterStore]
@@ -88,3 +89,6 @@
 
 (defn parameter-store [manager copy]
   (ParameterStore. manager copy))
+
+(defn new-gradient-collector []
+  (engine/new-gradient-collector (engine/get-instance)))

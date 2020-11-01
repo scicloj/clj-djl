@@ -1,7 +1,8 @@
 (ns clj-djl.training.dataset
   (:import [ai.djl.training.dataset Dataset
             ArrayDataset ArrayDataset$Builder]
-           [ai.djl.ndarray NDArray]))
+           [ai.djl.ndarray NDArray]
+           [ai.djl.training.dataset Dataset$Usage]))
 
 (defn set-sampling [builder batch-size drop-last]
   (.setSampling builder batch-size drop-last)
@@ -28,6 +29,18 @@
 (defn get-data [ds manager]
   (.getData ds manager))
 
+(defn iter-seq
+([iterable]
+ (iter-seq iterable (.iterator iterable)))
+([iterable iter]
+ (lazy-seq
+  (when (.hasNext iter)
+    (cons (.next iter) (iter-seq iterable iter))))))
+
+(defn get-data-iterator [ds manager]
+  (iter-seq (get-data ds manager)))
+
+
 (defn opt-labels [builder & labels]
   (.optLabels builder (into-array NDArray labels))
   builder)
@@ -41,9 +54,22 @@
 (defn close-batch [batch]
   (.close batch))
 
-(defn opt-usage [builder usage]
+(defmulti opt-usage
+  (fn [builder usage]
+    (type usage)))
+
+(defmethod opt-usage ai.djl.training.dataset.Dataset$Usage
+  [builder usage]
   (.optUsage builder usage)
   builder)
+
+(defmethod opt-usage clojure.lang.Keyword
+  [builder usage]
+  (let [usage-map {:test Dataset$Usage/TEST   :TEST Dataset$Usage/TEST
+                   :train Dataset$Usage/TRAIN :TRAIN Dataset$Usage/TRAIN
+                   :validation Dataset$Usage/VALIDATION :VALIDATION Dataset$Usage/VALIDATION}]
+    (.optUsage builder (usage-map usage))
+    builder))
 
 #_(defn build-dataset [config]
   (let [{:keys [dataset usage sampling]} config]
