@@ -1,7 +1,8 @@
 (ns clj-djl.nn
   (:import [ai.djl.nn Activation SequentialBlock]
            [ai.djl.nn.core Linear]
-           [ai.djl.nn Blocks]))
+           [ai.djl.nn Blocks]
+           [ai.djl.training.initializer NormalInitializer]))
 
 (defn relu-block []
   (Activation/reluBlock))
@@ -36,8 +37,10 @@
 (defn build [builder]
   (.build builder))
 
+;; defmulti
 (defn add [net block]
-  (.add net block))
+  (.add net block)
+  net)
 
 (defn batch-flatten-block [& more]
   (if (nil? more)
@@ -56,3 +59,13 @@
   (if (nil? params)
     (.forward block paramstore inputs labels-or-training?)
     (.forward block paramstore inputs labels-or-training? params)))
+
+(defn set-initializer [net initializer]
+  (.setInitializer net initializer)
+  net)
+
+(defn new-normal-initializer
+  ([]
+   (NormalInitializer.))
+  ([sigma]
+   (NormalInitializer. sigma)))

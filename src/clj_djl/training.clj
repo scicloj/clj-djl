@@ -85,10 +85,14 @@
   (.forward trainer (NDList. input)))
 
 (defn set-metrics [trainer metrics]
-  (.setMetrics trainer metrics))
+  (.setMetrics trainer metrics)
+  trainer)
 
 (defn parameter-store [manager copy]
   (ParameterStore. manager copy))
 
 (defn new-gradient-collector []
   (engine/new-gradient-collector (engine/get-instance)))
+
+(defn fit [trainer nepochs train-iter test-iter]
+  (EasyTrain/fit trainer nepochs train-iter test-iter))
