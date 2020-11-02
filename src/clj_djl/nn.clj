@@ -28,6 +28,13 @@
 (defn new-linear-builder []
   (Linear/builder))
 
+(defn linear-block [options]
+  (let [{:keys [bias units] :or {bias true}} options]
+    (-> (Linear/builder)
+        (.optBias bias)
+        (.setUnits units)
+        (.build))))
+
 (defn opt-bias [builder bias]
   (.optBias builder bias))
 
@@ -46,6 +53,7 @@
   (if (nil? more)
     (Blocks/batchFlattenBlock)
     (Blocks/batchFlattenBlock (first more))))
+
 
 (defn batch-flatten [array & more]
   (if (nil? more)
