@@ -33,6 +33,9 @@
   (.addEvaluator config evaluator)
   config)
 
+(defn get-evaluators [trainer]
+  (.getEvaluators trainer))
+
 (defn new-accuracy []
   (Accuracy.))
 
@@ -87,6 +90,9 @@
 (defn set-metrics [trainer metrics]
   (.setMetrics trainer metrics)
   trainer)
+
+(defn get-metrics [trainer]
+  (.getMetrics trainer))
 
 (defn parameter-store [manager copy]
   (ParameterStore. manager copy))
