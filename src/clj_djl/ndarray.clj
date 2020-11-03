@@ -70,6 +70,10 @@
          local-shape (if (sequential? shape) (new-shape shape) shape)]
      (.zeros manager local-shape local-data-type)) device))
 
+(defn zeros-like
+  [ndarray]
+  (.zerosLike  ndarray))
+
 (defn ones
   ([manager shape]
    (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
@@ -82,6 +86,10 @@
    (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
          local-shape (if (sequential? shape) (new-shape shape) shape)]
      (.ones manager local-shape local-data-type)) device))
+
+(defn ones-like
+  [ndarray]
+  (.onesLike ndarray))
 
 (defmulti arange (fn [manager start-or-stop & more]
                    (type start-or-stop)))
@@ -214,11 +222,8 @@
 (defn stack [col]
   (NDArrays/stack (NDList. (into-array col))))
 
-(defn- get-datatype [data-type]
-  (condp clojure.core/= (type data-type)
-    java.lang.String (DataType/valueOf (.toUpperCase data-type))
-    clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name data-type)))
-    DataType data-type))
+(defn- get-datatype [ndarray]
+  (.getDataType ndarray))
 
 (defn random-normal
   ([manager shape]
@@ -316,17 +321,11 @@
        DataType/FLOAT32 (.getFloat array index)
        DataType/FLOAT64 (.getDouble array index)))))
 
-(defn to-array [array]
-  (condp clojure.core/= (.getDataType array)
-    DataType/BOOLEAN (.toBooleanArray array)
-    DataType/INT8 (.toByteArray array)
-    DataType/INT32 (.toIntArray array)
-    DataType/INT64 (.toLongArray array)
-    DataType/FLOAT32 (.toFloatArray array)
-    DataType/FLOAT64 (.toDoubleArray array)))
+(defn to-array [ndarray]
+  (.toArray ndarray))
 
-(defn to-vec [array]
-  (vec (to-array array)))
+(defn to-vec [ndarray]
+  (vec (to-array ndarray)))
 
 (defn to-type
   "convert ndarray to data-type, available options are:
@@ -347,7 +346,8 @@
      (string? index)
      (.set array (NDIndex. index (object-array [])) value)
      :else
-     (.set array index value))))
+     (.set array index value))
+   array))
 
 (defn get
   ([array]
