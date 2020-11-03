@@ -59,7 +59,8 @@
 
 (defn zeros
   ([manager shape]
-   (.zeros manager (new-shape shape)))
+   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.zeros manager local-shape)))
   ([manager shape data-type]
    (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
          local-shape (if (sequential? shape) (new-shape shape) shape)]
@@ -71,7 +72,8 @@
 
 (defn ones
   ([manager shape]
-   (.ones manager (new-shape shape)))
+   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.ones manager local-shape)))
   ([manager shape data-type]
    (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
          local-shape (if (sequential? shape) (new-shape shape) shape)]
@@ -219,26 +221,17 @@
     DataType data-type))
 
 (defn random-normal
-  ([manager loc scale shape-col data-type]
-   (let [data-type (get-datatype data-type)]
-     (cond
-       (instance? java.util.Collection shape-col)
-       (.randomNormal manager loc scale (shape shape-col) data-type)
-       (instance? ai.djl.ndarray.types.Shape shape-col)
-       (.randomNormal manager loc scale shape-col data-type))))
-  ([manager loc scale shape-col data-type device]
-   (let [data-type (get-datatype data-type)]
-     (cond
-       (instance? java.util.Collection shape-col)
-       (.randomNormal manager loc scale (shape shape-col) data-type device)
-       (instance? ai.djl.ndarray.types.Shape shape-col)
-       (.randomNormal manager loc scale shape-col data-type device))))
-  ([manager shape-col]
-   (cond
-     (instance? java.util.Collection shape-col)
-     (.randomNormal manager (shape shape-col))
-     (instance? ai.djl.ndarray.types.Shape shape-col)
-     (.randomNormal manager shape-col))))
+  ([manager shape]
+   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.randomNormal manager local-shape)))
+  ([manager loc scale shape data-type]
+   (let [local-shape (if (sequential? shape) (new-shape shape) shape)
+         local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)]
+     (.randomNormal manager loc scale local-shape local-data-type)))
+  ([manager loc scale shape data-type device]
+   (let [local-shape (if (sequential? shape) (new-shape shape) shape)
+         local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)]
+     (.randomNormal manager loc scale local-shape local-data-type device))))
 
 (defmulti random-uniform
   (fn [manager low high shape & [data-type device]]
