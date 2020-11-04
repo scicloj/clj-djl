@@ -215,13 +215,43 @@
 
 (def sparse? is-sparse)
 
-(defn ndlist [arrays]
-  (new NDList arrays))
+(defmulti ndlist (fn [& more]
+                   (type (first more))))
+
+(defmethod ndlist nil
+  []
+  (NDList.))
+
+(defmethod ndlist ai.djl.ndarray.NDArray
+  [& more]
+  (NDList. (into-array NDArray more)))
+
+(defmethod ndlist java.util.Collection
+  [other]
+  (NDList. other))
 
 (def new-ndlist ndlist)
 
-(defn stack [col]
-  (NDArrays/stack (NDList. (into-array col))))
+(defmulti stack (fn [param1 & [param2]]
+                  (type param1)))
+
+(defmethod stack ai.djl.ndarray.NDArray
+  [ndarray1 ndarray2 & [axis]]
+  (if (nil? axis)
+    (.stack ndarray1 ndarray2)
+    (.stack ndarray1 ndarray2 axis)))
+
+(defmethod stack ai.djl.ndarray.NDList
+  [ndlist & [axis]]
+  (if (nil? axis)
+    (NDArrays/stack ndlist)
+    (NDArrays/stack ndlist axis)))
+
+(defmethod stack clojure.lang.PersistentVector
+  [coll & [axis]]
+  (if (nil? axis)
+    (NDArrays/stack (NDList. (into-array coll)))
+    (NDArrays/stack (NDList. (into-array coll)) axis)))
 
 (defn- get-datatype [ndarray]
   (.getDataType ndarray))

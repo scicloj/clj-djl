@@ -17,5 +17,5 @@
                      param-store (train/parameter-store manager false)
                      data (nd/random-uniform manager 0 255 [10 28 28])
                      expected (nd/reshape data [10 (* 28 28)])
-                     result (-> model model/get-block (nn/forward param-store (nd/ndlist [data]) true) nd/head)]
+                     result (-> model model/get-block (nn/forward param-store (nd/ndlist data) true) nd/head)]
                     (is (= result expected)))))
