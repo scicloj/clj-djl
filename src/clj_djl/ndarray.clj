@@ -349,7 +349,10 @@
      (.set array index value))
    array))
 
-(defn get
+(defmulti get (fn [param & more]
+                (type param)))
+
+(defmethod get ai.djl.ndarray.NDArray
   ([array]
    (.get array (NDIndex. (long-array []))))
   ([array indices & more]
@@ -362,6 +365,11 @@
      (.get array (NDIndex. indices (object-array more)))
      :else
      (.get array indices))))
+
+(defmethod get ai.djl.ndarray.NDList
+  [ndlist index]
+  (.get ndlist index))
+
 
 (defn singleton-or-throw [ndlist]
   (.singletonOrThrow ndlist))
@@ -390,3 +398,11 @@
 
 (defn log-softmax [ndarray axis]
   (.logSoftmax ndarray axis))
+
+(defn split [ndarray index-section & [axis]]
+  (let [local-index-section (if (sequential? index-section)
+                              (long-array index-section)
+                              index-section)]
+    (if (nil? axis)
+      (.split ndarray local-index-section)
+      (.split ndarray local-index-section axis))))
