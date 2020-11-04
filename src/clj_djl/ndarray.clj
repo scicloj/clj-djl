@@ -9,7 +9,8 @@
                             = <= < >= >
                             identity to-array
                             min max concat
-                            get set]))
+                            get set
+                            flatten]))
 
 (defn new-base-manager []
   (NDManager/newBaseManager))
@@ -181,7 +182,7 @@
    (let [param-shape (new-shape (long-array (matrix/shape data)))]
      (create manager data param-shape)))
   ([manager param1 param2]
-   (let [flat (flatten param1)
+   (let [flat (clojure.core/flatten param1)
          param-shape (if (sequential? param2)
                        (shape param2)
                        param2)]
@@ -406,3 +407,6 @@
     (if (nil? axis)
       (.split ndarray local-index-section)
       (.split ndarray local-index-section axis))))
+
+(defn flatten [ndarray]
+  (.flatten ndarray))
