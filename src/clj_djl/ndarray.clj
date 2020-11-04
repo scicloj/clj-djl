@@ -410,3 +410,6 @@
 
 (defn flatten [ndarray]
   (.flatten ndarray))
+
+(defn expand-dims [ndarray axis]
+  (.expandDims ndarray axis))

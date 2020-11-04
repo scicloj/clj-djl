@@ -106,9 +106,26 @@
              (nd/reshape array2 [2 3 0 1])
              result)))))
 
+(deftest expand-dim-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [array (nd/create ndm (float-array [1. 2.]))
+          expected (nd/create ndm (float-array [1. 2.]) (nd/shape [1 2]))]
+      (is (= (nd/expand-dims array 0) expected)))
 
+    ;; multi-dim
+    (let [array (nd/create ndm (float-array [1. 2. 3. 4.]) (nd/shape [2 2]))
+          expected (nd/create ndm (float-array [1. 2. 3. 4.]) (nd/shape [2 1 2]))]
+      (is (= (nd/expand-dims array 1) expected)))
 
+    ;; scalar
+    (let [array (nd/create ndm (float 4.))
+          expected (nd/create ndm (float-array [4.]))]
+      (is (= (nd/expand-dims array 0) expected)))
 
+    ;; zero-dim
+    (let [array (nd/create ndm (nd/shape [2 1 0]))
+          expected (nd/create ndm (nd/shape [2 1 1 0]))]
+      (is (= (nd/expand-dims array 2) expected)))))
 
 (comment
   (def ndm (nd/new-base-manager))
