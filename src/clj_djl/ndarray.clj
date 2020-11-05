@@ -444,10 +444,16 @@
 (defn pp [array]
   (println (str array)))
 
-(defn ndindex []
-  (NDIndex.))
+(defn ndindex
+  ([]
+   (NDIndex.))
+  ([param1 & more]
+   (cond
+     (int? param1) (NDIndex. (long-array (cons param1 more)))
+     (string? param1) (NDIndex. param1 (into-array java.lang.Object more)))))
 
 (def new-ndindex ndindex)
+(def index ndindex)
 
 (defn log-softmax [ndarray axis]
   (.logSoftmax ndarray axis))
