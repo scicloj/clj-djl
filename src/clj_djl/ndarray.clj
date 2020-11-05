@@ -26,10 +26,16 @@
 (defn shape
   ([]
    (shape []))
-  ([col]
-   (Shape. col))
-  ([m n]
-   (shape [m n])))
+  ([param1 & more]
+   (cond
+     (instance? ai.djl.util.PairList param1) (Shape. param1)
+     (.isArray (class param1)) (if (some? (first more))
+                                 (Shape. param1 (first more))
+                                 (Shape. param1))
+     (int? param1) (Shape. (long-array (cons param1 more)))
+     (sequential? param1) (if (some? (first more))
+                            (Shape. param1 (first more))
+                            (Shape. param1)))))
 
 (def new-shape shape)
 

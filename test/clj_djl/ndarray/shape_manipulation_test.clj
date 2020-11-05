@@ -173,7 +173,40 @@
       (let [expected (nd/create ndm (float-array [1. 3. 2. 4.]) (nd/shape 2 2))]
         (is (= (nd/stack array1 array2 1) expected))
         (is (= (nd/stack (nd/ndlist array1 array2) 1) expected))
-        ))))
+        (is (= (nd/stack [array1 array2] 1) expected))))
+    (let [array1 (nd/create ndm (float-array [1. 2. 3. 4.]) (nd/shape 2 2))
+          array2 (nd/create ndm (float-array [5. 6. 7. 8.]) (nd/shape 2 2))]
+      (let [expected (nd/create ndm (float-array [1. 2. 3. 4. 5. 6. 7. 8.]) (nd/shape 2 2 2))]
+        (is (= (nd/stack array1 array2) expected))
+        (is (= (nd/stack (nd/ndlist array1 array2)) expected))
+        (is (= (nd/stack [array1 array2]) expected)))
+      (let [expected (nd/create ndm (float-array [1. 2. 5. 6. 3. 4. 7. 8.]) (nd/shape 2 2 2))]
+        (is (= (nd/stack array1 array2 1) expected))
+        (is (= (nd/stack (nd/ndlist array1 array2) 1) expected))
+        (is (= (nd/stack [array1 array2] 1) expected))))
+
+    ;; scalar
+    (let [array1 (nd/create ndm (float 5.))
+          array2 (nd/create ndm (float 4.))]
+      (let [expected (nd/create ndm (float-array [5. 4.]))]
+        (is (= (nd/stack array1 array2) expected))
+        (is (= (nd/stack (nd/ndlist array1 array2)) expected))
+        (is (= (nd/stack [array1 array2]) expected))))
+
+    ;;zero-dim
+    (let [array1 (nd/create ndm (nd/shape 0 0))]
+      (let [expected (nd/create ndm (nd/shape 2 0 0))]
+        (is (= (nd/stack array1 array1) expected))
+        (is (= (nd/stack (nd/ndlist array1 array1)) expected))
+        (is (= (nd/stack [array1 array1]) expected)))
+      (let [expected (nd/create ndm (nd/shape 0 2 0))]
+        (is (= (nd/stack array1 array1 1) expected))
+        (is (= (nd/stack (nd/ndlist array1 array1) 1) expected))
+        (is (= (nd/stack [array1 array1] 1) expected)))
+      (let [expected (nd/create ndm (nd/shape 0 0 2))]
+        (is (= (nd/stack array1 array1 2) expected))
+        (is (= (nd/stack (nd/ndlist array1 array1) 2) expected))
+        (is (= (nd/stack [array1 array1] 2) expected))))))
 
 (deftest concat-test
   (with-open [ndm (nd/new-base-manager)]
@@ -214,8 +247,16 @@
         (is (= (nd/concat (nd/ndlist array1 array1) 1) expected))
         (is (= (nd/concat [array1 array1] 1) expected))))))
 
-
-
+(deftest concat-ndlist-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [array1 (nd/create ndm (float 1.))
+          array2 (nd/create ndm (float 2.))]
+      (is (thrown? java.lang.IllegalArgumentException (nd/concat (nd/ndlist array1 array2))))
+      (is (thrown? java.lang.IllegalArgumentException (nd/concat [array1 array2]))))
+    (let [array1 (nd/create ndm 1.)
+          array2 (nd/create ndm 2.)]
+      (is (thrown? java.lang.IllegalArgumentException (nd/concat (nd/ndlist array1 array2))))
+      (is (thrown? java.lang.IllegalArgumentException (nd/concat [array1 array2]))))))
 
 (comment
   (def ndm (nd/new-base-manager))
