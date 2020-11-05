@@ -333,11 +333,27 @@
   ([array axes keep-dims]
    (.sum array (int-array axes) keep-dims)))
 
-(defn concat
-  ([array0 array1]
-   (concat array0 array1 :axis 0))
-  ([array0 array1 & {axis :axis}]
-   (.concat array0 array1 axis)))
+(defmulti concat (fn [param1 & [param2]]
+                  (type param1)))
+
+(defmethod concat ai.djl.ndarray.NDArray
+  [ndarray1 ndarray2 & [axis]]
+  (if (nil? axis)
+    (.concat ndarray1 ndarray2)
+    (.concat ndarray1 ndarray2 axis)))
+
+(defmethod concat ai.djl.ndarray.NDList
+  [ndlist & [axis]]
+  (if (nil? axis)
+    (NDArrays/concat ndlist)
+    (NDArrays/concat ndlist axis)))
+
+(defmethod concat clojure.lang.PersistentVector
+  [coll & [axis]]
+  (if (nil? axis)
+    (NDArrays/concat (NDList. (into-array coll)))
+    (NDArrays/concat (NDList. (into-array coll)) axis)))
+
 
 (defn get-element
   ([array]
