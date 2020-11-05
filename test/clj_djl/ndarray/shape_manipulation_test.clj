@@ -136,6 +136,34 @@
           expected (nd/create ndm (nd/shape [2 1 1 0]))]
       (is (= (nd/expand-dims array 2) expected)))))
 
+(deftest squeeze-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [array (nd/ones ndm (nd/shape [1 2 1 3 1]))
+          expected (nd/ones ndm (nd/shape [2 3]))]
+      (is (= (nd/squeeze array) expected)))
+    (let [array (nd/ones ndm [1 2 1 3 1])
+          expected (nd/ones ndm [2 3])]
+      (is (= (nd/squeeze array) expected)))
+
+    ;; scalar
+    (let [array (nd/create ndm (float 2.))]
+      (is (= (nd/squeeze array) array))
+      (is (= (nd/squeeze array 0) array))
+      (is (= (nd/squeeze array (int-array [0])) array))
+      (is (= (nd/squeeze array [0]) array)))
+
+    ;; zero-dim
+    (let [array (nd/create ndm (nd/shape [1 0 1 3 1]))]
+      (let [expected (nd/create ndm (nd/shape [0 3]))]
+        (is (= (nd/squeeze array) expected)))
+      (let [expected (nd/create ndm (nd/shape [1 0 3 1]))]
+        (is (= (nd/squeeze array 2) expected)))
+      (let [expected (nd/create ndm (nd/shape [0 1 3]))]
+        (is (= (nd/squeeze array (int-array [0 4])) expected))
+        (is (= (nd/squeeze array [0 4]) expected))))))
+
+
+
 (deftest stack-test
   (with-open [ndm (nd/new-base-manager)]
     (let [array1 (nd/create ndm (float-array [1. 2.]))
@@ -148,7 +176,6 @@
         (is (= (nd/stack array1 array2 1) expected))
         (is (= (nd/stack (nd/ndlist array1 array2) 1) expected))
         ))))
-
 
 
 (comment

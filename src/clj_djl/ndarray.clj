@@ -443,3 +443,10 @@
 
 (defn expand-dims [ndarray axis]
   (.expandDims ndarray axis))
+
+(defn squeeze [ndarray & [axis]]
+  (if (nil? axis)
+    (.squeeze ndarray)
+    (if (sequential? axis)
+      (.squeeze ndarray (int-array axis))
+      (.squeeze ndarray axis))))
