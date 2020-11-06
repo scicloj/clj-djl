@@ -190,7 +190,7 @@
    (.create manager data))
   ([manager data shape]
    (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.create manager data shape))))
+     (.create manager data local-shape))))
 
 (defmethod create :primitive
   [manager data]
