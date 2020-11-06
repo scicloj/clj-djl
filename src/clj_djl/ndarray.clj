@@ -42,12 +42,30 @@
 (defn get-shape [ndarray]
   (.getShape ndarray))
 
-(defn reshape [ndarray new-shape]
-  (cond
-    (instance? java.util.Collection new-shape)
-    (.reshape ndarray (long-array new-shape))
-    (instance? ai.djl.ndarray.types.Shape new-shape)
-    (.reshape ndarray new-shape)))
+(defn shape
+  ([]
+   (shape []))
+  ([param1 & more]
+   (cond
+     (instance? ai.djl.util.PairList param1) (Shape. param1)
+     (.isArray (class param1)) (if (some? (first more))
+                                 (Shape. param1 (first more))
+                                 (Shape. param1))
+     (int? param1) (Shape. (long-array (cons param1 more)))
+     (sequential? param1) (if (some? (first more))
+                            (Shape. param1 (first more))
+                            (Shape. param1)))))
+
+(def new-shape shape)
+
+(defn reshape
+  ([ndarray]
+   (.reshape ndarray))
+  ([ndarray param1 & more]
+   (cond
+     (instance? ai.djl.ndarray.types.Shape param1) (.reshape ndarray param1)
+     (int? param1) (.reshape ndarray (long-array (cons param1 more)))
+     (sequential? param1) (.reshape ndarray (long-array param1)))))
 
 (defn size
   "calc the seize of a ndarray."
@@ -391,17 +409,6 @@
     clojure.lang.Keyword (.toType ndarray (DataType/valueOf (.toUpperCase (name data-type))) copy)
     DataType (.toType ndarray data-type copy)))
 
-(defn set
-  ([array index value]
-   (cond
-     (sequential? index)
-     (.set array (NDIndex. (long-array index)) value)
-     (string? index)
-     (.set array (NDIndex. index (object-array [])) value)
-     :else
-     (.set array index value))
-   array))
-
 (defmulti get (fn [param & more]
                 (type param)))
 
@@ -422,6 +429,22 @@
 (defmethod get ai.djl.ndarray.NDList
   [ndlist index]
   (.get ndlist index))
+
+(defn set
+  ([array data]
+   (.set array data)
+   array)
+  ([array index val-or-fun]
+   (let [local-index
+         (cond
+           (sequential? index) (NDIndex. (long-array index))
+           (string? index) (NDIndex. index (object-array []))
+           :else index)]
+     (if (clojure.test/function? val-or-fun)
+       (let [value (val-or-fun (get array local-index))]
+         (.set array local-index value))
+       (.set array local-index val-or-fun))
+     array)))
 
 
 (defn singleton-or-throw [ndlist]
@@ -478,3 +501,6 @@
     (if (sequential? axis)
       (.squeeze ndarray (int-array axis))
       (.squeeze ndarray axis))))
+
+(defn set-scalar [ndarray ndindex value]
+  (.setScalar ndarray ndindex value))

@@ -79,8 +79,8 @@
 
 (deftest set-array-broadcast-test
   (with-open [ndm (nd/new-base-manager)]
-    (let [original (nd/create ndm (float-array [1 2 3 4]) (nd/shape 2 2))
-          expected (nd/create ndm (float-array [9 9 3 4]) (nd/shape 2 2))
+    (let [original (nd/create ndm (float-array [1 2 3 4]) (nd/shape 2 2 1))
+          expected (nd/create ndm (float-array [9 9 3 4]) (nd/shape 2 2 1))
           value (nd/create ndm (float-array [9]))]
       (nd/set original (nd/ndindex 0) value)
       (is (= original expected)))
@@ -89,3 +89,58 @@
           value (nd/create ndm [9])]
       (nd/set original (nd/ndindex 0) value)
       (is (= original expected)))))
+
+(deftest test-set-number
+  (with-open [ndm (nd/new-base-manager)]
+    (let [original (nd/create ndm (float-array [1 2 3 4]) (nd/shape 2 2))
+          expected (nd/create ndm (float-array [9 9 3 4]) (nd/shape 2 2))]
+      (nd/set original (nd/ndindex 0) 9)
+      (is (= original expected)))
+    (let [original (nd/create ndm [1 2 3 4] (nd/shape 2 2))
+          expected (nd/create ndm [9 9 3 4] (nd/shape 2 2))]
+      (nd/set original (nd/ndindex 0) 9)
+      (is (= original expected)))
+    (let [original (nd/create ndm [1 2 3 4] (nd/shape [2 2]))
+          expected (nd/create ndm [9 9 3 4] (nd/shape [2 2]))]
+      (nd/set original (nd/ndindex 0) 9)
+      (is (= original expected)))
+    (let [original (nd/create ndm [1 2 3 4] [2 2])
+          expected (nd/create ndm [9 9 3 4] [2 2])]
+      (nd/set original (nd/ndindex 0) 9)
+      (is (= original expected)))
+    (let [original (-> (nd/arange ndm 4.) (nd/reshape 2 2))
+          expected (nd/ones ndm (nd/shape [2 2]))]
+      (nd/set original (nd/ndindex "...") 1)
+      (is (= original expected)))
+    (let [original (-> (nd/arange ndm 4.) (nd/reshape [2 2]))
+          expected (nd/ones ndm (nd/shape [2 2]))]
+      (nd/set original (nd/ndindex "...") 1)
+      (is (= original expected)))
+    (let [original (-> (nd/arange ndm 4.) (nd/reshape 2 2))
+          expected (-> (nd/create ndm (float-array [1 1 1 3])) (nd/reshape 2 2))]
+      (nd/set original (nd/ndindex "..., 0") 1)
+      (is (= original expected)))))
+
+(deftest test-set-scalar
+  (with-open [ndm (nd/new-base-manager)]
+    (let [original (nd/create ndm (float-array [1 2 3 4]) (nd/shape 2 2))
+          expected1 (nd/create ndm (float-array [0 2 3 4]) (nd/shape 2 2))
+          expected2 (nd/create ndm (float-array [1 1 3 4]) (nd/shape 2 2))]
+      (nd/set-scalar original (nd/ndindex 0 0) 0)
+      (is (= original expected1))
+      (is (thrown?
+           java.lang.IllegalArgumentException
+           (nd/set-scalar original (nd/ndindex 0) 1))))))
+
+(deftest test-set-by-function
+  (with-open [ndm (nd/new-base-manager)]
+    (let [original (-> (nd/arange ndm 1 10) (nd/reshape 3 3))
+          expected (nd/create ndm (int-array [4 10 16]))
+          index (nd/ndindex ":, 1")]
+      (nd/set original index #(nd/* % 2))
+      (is (= (nd/get original index) expected)))
+    (let [original (-> (nd/arange ndm 6) (nd/reshape 3 2))
+          expected (nd/create ndm (int-array [6 8 10]))
+          index (nd/ndindex ":, 1")]
+      (nd/set original index #(nd/+ % 5))
+      (is (= (nd/get original index) expected)))))
