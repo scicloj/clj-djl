@@ -440,7 +440,7 @@
            (sequential? index) (NDIndex. (long-array index))
            (string? index) (NDIndex. index (object-array []))
            :else index)]
-     (if (clojure.test/function? val-or-fun)
+     (if (clojure.core/fn? val-or-fun)
        (let [value (val-or-fun (get array local-index))]
          (.set array local-index value))
        (.set array local-index val-or-fun))
