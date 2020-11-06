@@ -1,5 +1,6 @@
 (ns clj-djl.ndarray
-  (:require [clojure.core.matrix :as matrix])
+  (:require [clojure.core.matrix :as matrix]
+            [tablecloth.api :as tablecloth])
   (:import [ai.djl.ndarray NDManager NDArray NDList NDArrays]
            [ai.djl.ndarray.index NDIndex]
            [ai.djl.ndarray.types Shape DataType]
@@ -34,29 +35,13 @@
                                  (Shape. param1))
      (int? param1) (Shape. (long-array (cons param1 more)))
      (sequential? param1) (if (some? (first more))
-                            (Shape. param1 (first more))
-                            (Shape. param1)))))
+                            (Shape. (long-array param1) (first more))
+                            (Shape. (long-array param1))))))
 
 (def new-shape shape)
 
 (defn get-shape [ndarray]
   (.getShape ndarray))
-
-(defn shape
-  ([]
-   (shape []))
-  ([param1 & more]
-   (cond
-     (instance? ai.djl.util.PairList param1) (Shape. param1)
-     (.isArray (class param1)) (if (some? (first more))
-                                 (Shape. param1 (first more))
-                                 (Shape. param1))
-     (int? param1) (Shape. (long-array (cons param1 more)))
-     (sequential? param1) (if (some? (first more))
-                            (Shape. param1 (first more))
-                            (Shape. param1)))))
-
-(def new-shape shape)
 
 (defn reshape
   ([ndarray]
@@ -81,6 +66,11 @@
                    :float16 DataType/FLOAT16
                    :float32 DataType/FLOAT32
                    :float64 DataType/FLOAT64})
+(defn- convert-datatype [data-type]
+  (condp clojure.core/= (type data-type)
+    java.lang.String (DataType/valueOf (.toUpperCase data-type))
+    clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name data-type)))
+    data-type))
 
 (defn zeros
   ([manager shape]
@@ -188,22 +178,27 @@
 
 (defmulti create
   (fn [manager data & more]
-    (sequential? data)))
+    (cond
+      (.isArray (.getClass data)):array
+      (or (number? data) (boolean? data) (string? data)) :primitive
+      (sequential? data) :sequential
+      (instance? ai.djl.ndarray.types.Shape data) :shape
+      (instance? tech.ml.dataset.impl.dataset.Dataset data) :dataset)))
 
-(defmethod create :default
+(defmethod create :array
   ([manager data]
    (.create manager data))
-  ([manager data1 data2]
-   (let [param2 (if (sequential? data2)
-                  (shape data2)
-                  data2)]
-     (.create manager data1 param2)))
-  ([manager data1 data2 data3]
-   (.create manager data1 data2 data3)))
+  ([manager data shape]
+   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.create manager data shape))))
 
-(defmethod create true
+(defmethod create :primitive
+  [manager data]
+  (.create manager data))
+
+(defmethod create :sequential
   ([manager data]
-   (let [param-shape (new-shape (long-array (matrix/shape data)))]
+   (let [param-shape (new-shape (matrix/shape data))]
      (create manager data param-shape)))
   ([manager param1 param2]
    (let [flat (clojure.core/flatten param1)
@@ -214,9 +209,35 @@
        java.lang.Boolean (.create manager (boolean-array flat) param-shape)
        java.lang.Byte (.create manager (byte-array flat) param-shape)
        java.lang.Integer (.create manager (int-array flat) param-shape)
+       java.lang.Short (.create manager (int-array flat) param-shape)
        java.lang.Long (.create manager (long-array flat) param-shape)
        java.lang.Float (.create manager (float-array flat) param-shape)
        java.lang.Double (.create manager (double-array flat) param-shape)))))
+
+(defmethod create :shape
+  ([manager shape]
+   (.create manager shape))
+  ([manager shape data-type]
+   (let [local-data-type (convert-datatype data-type)]
+     (.create manager shape local-data-type)))
+  ([manager shape data-type device]
+   (let [local-data-type (convert-datatype data-type)]
+     (.create manager shape local-data-type device))))
+
+(defmethod create :dataset
+  [manager ds]
+  (let [data (if (clojure.core/= 1 (tablecloth/column-count ds))
+               (clojure.core/flatten (tablecloth/rows ds))
+               (map vec (tablecloth/rows ds)))]
+    (create manager data)))
+
+(defmethod create :default
+  ([manager data]
+   (.create manager data))
+  ([manager data1 data2]
+   (.create manager data1 data2))
+  ([manager data1 data2 data3]
+   (.create manager data1 data2 data3)))
 
 (defn create-csr [manager data indptr indices shape & device]
   (let [data (if (sequential? data)

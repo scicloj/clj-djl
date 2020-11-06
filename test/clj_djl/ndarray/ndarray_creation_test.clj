@@ -1,4 +1,4 @@
-(ns clj-djl.ndarray.ndarray-test
+(ns clj-djl.ndarray.ndarray-creation-test
   (:require [clojure.test :refer :all]
             [clj-djl.ndarray :as nd]
             [clj-djl.utils :refer :all]
