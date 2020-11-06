@@ -504,3 +504,43 @@
 
 (defn set-scalar [ndarray ndindex value]
   (.setScalar ndarray ndindex value))
+
+(defn max
+  [ndarray & [axes keep-dims]]
+  (if-not (nil? axes)
+    (if-not (nil? keep-dims)
+      (.max ndarray axes keep-dims)
+      (.max ndarray axes))
+    (.max ndarray)))
+
+(defn min
+  [ndarray & [axes keep-dims]]
+  (if-not (nil? axes)
+    (if-not (nil? keep-dims)
+      (.min ndarray axes keep-dims)
+      (.min ndarray axes))
+    (.min ndarray)))
+
+(defn prod
+  [ndarray & [axes keep-dims]]
+  (if-not (nil? axes)
+    (if-not (nil? keep-dims)
+      (.prod ndarray axes keep-dims)
+      (.prod ndarray axes))
+    (.prod ndarray)))
+
+(defn mean
+  [ndarray & [axes keep-dims]]
+  (if-not (nil? axes)
+    (if-not (nil? keep-dims)
+      (.mean ndarray axes keep-dims)
+      (.mean ndarray axes))
+    (.mean ndarray)))
+
+(defn trace
+  ([ndarray offset axis1 axis2]
+   (.trace ndarray offset axis1 axis2))
+  ([ndarray offset]
+   (.trace ndarray offset))
+  ([ndarray]
+   (.trace ndarray)))
