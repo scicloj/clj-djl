@@ -31,12 +31,12 @@
       (is (= (nd/get-element (nd/min array)) 0.)))
     (let [array (nd/create ndm (float-array [2 4 6 8]) (nd/shape 2 2))]
       (is (= (nd/get-element (nd/min array)) 2.))
-      (let [max-axes (nd/min array (int-array [1]))
+      (let [min-axes (nd/min array (int-array [1]))
             expected (nd/create ndm (float-array [2 6]))]
-        (is (= max-axes expected)))
-      (let [max-keep (nd/min array (int-array [0]) true)
+        (is (= min-axes expected)))
+      (let [min-keep (nd/min array (int-array [0]) true)
             expected (nd/create ndm (float-array [2 4]) (nd/shape 1 2))]
-        (is (= max-keep expected))))
+        (is (= min-keep expected))))
     (let [array (nd/create ndm 5.)]
       (is (= (nd/get-element (nd/min array)) 5.)))
     ;; MXNet engine call failed: MXNetError: Check failed
@@ -52,12 +52,12 @@
       (is (= (nd/get-element (nd/sum array)) 11.)))
     (let [array (nd/create ndm (float-array [2 4 6 8]) (nd/shape 2 2))]
       (is (= (nd/get-element (nd/sum array)) 20.))
-      (let [max-axes (nd/sum array (int-array [1]))
+      (let [sum-axes (nd/sum array (int-array [1]))
             expected (nd/create ndm (float-array [6 14]))]
-        (is (= max-axes expected)))
-      (let [max-keep (nd/sum array (int-array [0]) true)
+        (is (= sum-axes expected)))
+      (let [sum-keep (nd/sum array (int-array [0]) true)
             expected (nd/create ndm (float-array [8 12]) (nd/shape 1 2))]
-        (is (= max-keep expected))))
+        (is (= sum-keep expected))))
     (let [array (nd/create ndm 5.)]
       (is (= (nd/get-element (nd/sum array)) 5.)))
     ;; zero dim
@@ -70,12 +70,12 @@
       (is (= (nd/get-element (nd/prod array)) 24.)))
     (let [array (nd/create ndm (float-array [2 4 6 8]) (nd/shape 2 2))]
       (is (= (nd/get-element (nd/prod array)) 384.))
-      (let [max-axes (nd/prod array (int-array [1]))
+      (let [prod-axes (nd/prod array (int-array [1]))
             expected (nd/create ndm (float-array [8 48]))]
-        (is (= max-axes expected)))
-      (let [max-keep (nd/prod array (int-array [0]) true)
+        (is (= prod-axes expected)))
+      (let [prod-keep (nd/prod array (int-array [0]) true)
             expected (nd/create ndm (float-array [12 32]) (nd/shape 1 2))]
-        (is (= max-keep expected))))
+        (is (= prod-keep expected))))
     (let [array (nd/create ndm 5.)]
       (is (= (nd/get-element (nd/prod array)) 5.)))
     ;; zero dim
@@ -88,12 +88,12 @@
       (is (= (nd/get-element (nd/mean array)) 2.5)))
     (let [array (nd/create ndm (float-array [2 4 6 8]) (nd/shape 2 2))]
       (is (= (nd/get-element (nd/mean array)) 5.))
-      (let [max-axes (nd/mean array (int-array [1]))
+      (let [mean-axes (nd/mean array (int-array [1]))
             expected (nd/create ndm (float-array [3 7]))]
-        (is (= max-axes expected)))
-      (let [max-keep (nd/mean array (int-array [0]) true)
+        (is (= mean-axes expected)))
+      (let [mean-keep (nd/mean array (int-array [0]) true)
             expected (nd/create ndm (float-array [4 6]) (nd/shape 1 2))]
-        (is (= max-keep expected))))
+        (is (= mean-keep expected))))
     (let [array (nd/create ndm 5.)]
       (is (= (nd/get-element (nd/mean array)) 5.)))
     ;; zero dim
@@ -107,5 +107,4 @@
       (is (= original expected)))
     (let [original (-> (nd/arange ndm 24.) (nd/reshape (nd/shape 2 2 2 3)) (nd/trace))
           expected (nd/create ndm (float-array [6 8]))]
-      (is (= (nd/get-shape original) (nd/shape 2 3)))
-      )))
+      (is (= (nd/get-shape original) (nd/shape 2 3))))))

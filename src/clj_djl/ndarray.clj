@@ -16,6 +16,8 @@
 (defn new-base-manager []
   (NDManager/newBaseManager))
 
+(def base-manager new-base-manager)
+
 (def manager (NDManager/newBaseManager))
 
 (defn get-device [ndarray]
@@ -378,6 +380,12 @@
   ([array axes keep-dims]
    (.sum array (int-array axes) keep-dims)))
 
+(defn cumsum
+  ([array]
+   (.cumSum array))
+  ([array axis]
+   (.cumSum array axis)))
+
 (defmulti concat (fn [param1 & [param2]]
                   (type param1)))
 
@@ -451,6 +459,11 @@
   [ndlist index]
   (.get ndlist index))
 
+(defmethod get ai.djl.ndarray.types.Shape
+  [ndshape dim]
+  (.get ndshape dim))
+
+
 (defn set
   ([array data]
    (.set array data)
@@ -519,9 +532,12 @@
 (defn squeeze [ndarray & [axis]]
   (if (nil? axis)
     (.squeeze ndarray)
-    (if (sequential? axis)
-      (.squeeze ndarray (int-array axis))
-      (.squeeze ndarray axis))))
+    (if (number? axis)
+      (.squeeze ndarray axis)
+      (if (sequential? axis)
+        (let [axis (int-array axis)]
+          (.squeeze ndarray axis))
+        (.squeeze ndarray axis)))))
 
 (defn set-scalar [ndarray ndindex value]
   (.setScalar ndarray ndindex value))
@@ -529,33 +545,37 @@
 (defn max
   [ndarray & [axes keep-dims]]
   (if-not (nil? axes)
-    (if-not (nil? keep-dims)
-      (.max ndarray axes keep-dims)
-      (.max ndarray axes))
+    (let [axes (int-array axes)]
+      (if-not (nil? keep-dims)
+        (.max ndarray axes keep-dims)
+        (.max ndarray axes)))
     (.max ndarray)))
 
 (defn min
   [ndarray & [axes keep-dims]]
   (if-not (nil? axes)
-    (if-not (nil? keep-dims)
-      (.min ndarray axes keep-dims)
-      (.min ndarray axes))
+    (let [axes (int-array axes)]
+      (if-not (nil? keep-dims)
+        (.min ndarray axes keep-dims)
+        (.min ndarray axes)))
     (.min ndarray)))
 
 (defn prod
   [ndarray & [axes keep-dims]]
   (if-not (nil? axes)
-    (if-not (nil? keep-dims)
-      (.prod ndarray axes keep-dims)
-      (.prod ndarray axes))
+    (let [axes (int-array axes)]
+      (if-not (nil? keep-dims)
+        (.prod ndarray axes keep-dims)
+        (.prod ndarray axes)))
     (.prod ndarray)))
 
 (defn mean
   [ndarray & [axes keep-dims]]
   (if-not (nil? axes)
-    (if-not (nil? keep-dims)
-      (.mean ndarray axes keep-dims)
-      (.mean ndarray axes))
+    (let [axes (int-array axes)]
+      (if-not (nil? keep-dims)
+        (.mean ndarray axes keep-dims)
+        (.mean ndarray axes)))
     (.mean ndarray)))
 
 (defn trace
@@ -565,3 +585,16 @@
    (.trace ndarray offset))
   ([ndarray]
    (.trace ndarray)))
+
+(defn transpose
+  ([ndarray]
+   (.transpose ndarray))
+  ([ndarray axis & [more]]
+   (if (sequential? axis)
+     (.transpose ndarray (int-array axis))
+     (.transpose ndarray (int-array (cons [axis] more))))))
+
+(def t transpose)
+
+(defn copy [ndarray]
+  (create (.getManager ndarray) ndarray))

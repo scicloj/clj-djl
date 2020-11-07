@@ -9,7 +9,8 @@
            [ai.djl.training.listener TrainingListener LoggingTrainingListener]
            [ai.djl.ndarray.types Shape]
            [ai.djl.training.dataset Batch]
-           [ai.djl.ndarray NDList]))
+           [ai.djl.ndarray NDList]
+           [ai.djl.engine Engine]))
 
 (defn new-progress-bar []
   (ProgressBar.))
@@ -102,3 +103,21 @@
 
 (defn fit [trainer nepochs train-iter test-iter]
   (EasyTrain/fit trainer nepochs train-iter test-iter))
+
+
+(defn gradient-collector []
+  (-> (Engine/getInstance) (.newGradientCollector)))
+
+(defn attach-gradient
+  "Attaches a gradient NDArray to this NDArray and marks it so
+  GradientCollector.backward(NDArray) can compute the gradient with respect to it."
+  [ndarray]
+  (.attachGradient ndarray))
+
+(defn get-gradient
+  "Returns the gradient NDArray attached to this NDArray."
+  [ndarray]
+  (.getGradient ndarray))
+
+(defn backward [gc target]
+  (.backward gc target))
