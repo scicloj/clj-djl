@@ -390,12 +390,10 @@
                   (type param1)))
 
 (defmethod concat ai.djl.ndarray.NDArray
-  [ndarray1 ndarray2 & axis]
-  (if (empty? axis)
+  [ndarray1 ndarray2 & [axis]]
+  (if (nil? axis)
     (.concat ndarray1 ndarray2)
-    (if (keyword? (first axis))
-      (.concat ndarray1 ndarray2 (get axis 1))
-      (.concat ndarray1 ndarray2 (first axis)))))
+    (.concat ndarray1 ndarray2 axis)))
 
 (defmethod concat ai.djl.ndarray.NDList
   [ndlist & [axis]]
