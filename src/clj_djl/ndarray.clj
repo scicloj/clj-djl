@@ -68,6 +68,7 @@
                    :float16 DataType/FLOAT16
                    :float32 DataType/FLOAT32
                    :float64 DataType/FLOAT64})
+
 (defn- convert-datatype [data-type]
   (condp clojure.core/= (type data-type)
     java.lang.String (DataType/valueOf (.toUpperCase data-type))
@@ -598,3 +599,7 @@
 
 (defn copy [ndarray]
   (create (.getManager ndarray) ndarray))
+
+(defn norm
+  ([ndarray]
+   (.sqrt (.dot ndarray ndarray))))
