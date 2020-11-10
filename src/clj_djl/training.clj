@@ -15,6 +15,9 @@
 (defn new-progress-bar []
   (ProgressBar.))
 
+(defn new-training-config [loss]
+  (DefaultTrainingConfig. loss))
+
 (defn training-config [{:keys [loss devices data-manager initializer optimizer]}]
   (cond-> (DefaultTrainingConfig. loss)
     devices (.optDevices devices)
