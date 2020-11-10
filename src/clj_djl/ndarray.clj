@@ -1,6 +1,5 @@
 (ns clj-djl.ndarray
-  (:require [clojure.core.matrix :as matrix]
-            [tablecloth.api :as tablecloth])
+  (:require [clojure.core.matrix :as matrix])
   (:import [ai.djl.ndarray NDManager NDArray NDList NDArrays]
            [ai.djl.ndarray.index NDIndex]
            [ai.djl.ndarray.types Shape DataType]
@@ -186,7 +185,8 @@
       (or (number? data) (boolean? data) (string? data)) :primitive
       (sequential? data) :sequential
       (instance? ai.djl.ndarray.types.Shape data) :shape
-      (instance? tech.ml.dataset.impl.dataset.Dataset data) :dataset)))
+      ;;(instance? tech.ml.dataset.impl.dataset.Dataset data) :dataset
+      )))
 
 (defmethod create :array
   ([manager data]
@@ -227,7 +227,7 @@
    (let [local-data-type (convert-datatype data-type)]
      (.create manager shape local-data-type device))))
 
-(defmethod create :dataset
+#_(defmethod create :dataset
   [manager ds]
   (let [data (if (clojure.core/= 1 (tablecloth/column-count ds))
                (clojure.core/flatten (tablecloth/rows ds))
