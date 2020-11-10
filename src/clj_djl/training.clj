@@ -15,8 +15,12 @@
 (defn new-progress-bar []
   (ProgressBar.))
 
-(defn new-training-config [loss]
-  (DefaultTrainingConfig. loss))
+(defn training-config [{:keys [loss devices data-manager initializer optimizer]}]
+  (cond-> (DefaultTrainingConfig. loss)
+    devices (.optDevices devices)
+    data-manager (.optDataManager data-manager)
+    initializer (.optInitializer initializer)
+    optimizer (.optOptimizer optimizer)))
 
 (defn new-default-training-config [loss]
   (DefaultTrainingConfig. loss))
@@ -98,8 +102,11 @@
 (defn parameter-store [manager copy]
   (ParameterStore. manager copy))
 
-(defn new-gradient-collector []
-  (engine/new-gradient-collector (engine/get-instance)))
+(defn new-gradient-collector
+  ([]
+   (engine/new-gradient-collector (engine/get-instance)))
+  ([trainer]
+   (.newGradientCollector trainer)))
 
 (defn fit [trainer nepochs train-iter test-iter]
   (EasyTrain/fit trainer nepochs train-iter test-iter))
