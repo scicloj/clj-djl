@@ -337,6 +337,12 @@
   ([manager low high shape data-type device]
    (.randomUniform manager low high shape data-type device)))
 
+(defn random-multinomial
+  ([ndmanager n ndarray]
+   (.randomMultinomial ndmanager n ndarray))
+  ([ndmanager n ndarray shape]
+   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.randomMultinomial ndmanager n ndarray local-shape))))
 
 (defn + [array0 array1]
   (.add array0 array1))
@@ -377,9 +383,17 @@
   ([array]
    (.sum array))
   ([array axes]
-   (.sum array (int-array axes)))
+   (let [local-axes (cond
+                      (number? axes) (int-array [axes])
+                      (sequential? axes) (int-array axes)
+                      :else axes)]
+        (.sum array local-axes)))
   ([array axes keep-dims]
-   (.sum array (int-array axes) keep-dims)))
+   (let [local-axes (cond
+                      (number? axes) (int-array [axes])
+                      (sequential? axes) (int-array axes)
+                      :else axes)]
+     (.sum array local-axes keep-dims))))
 
 (defn cumsum
   ([array]
@@ -603,3 +617,8 @@
 (defn norm
   ([ndarray]
    (.sqrt (.dot ndarray ndarray))))
+
+(defn abs
+  "Returns the absolute value of this NDArray element-wise"
+  [ndarray]
+  (.abs ndarray))
