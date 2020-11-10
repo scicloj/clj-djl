@@ -24,6 +24,23 @@
           (t/backward gc result)
           (let [grad (t/get-gradient lhs)]
             (is (= expected grad))
-            (println grad)
             (.close grad)
-            (is (= expected (t/get-gradient lhs)))))))))
+            (is (= expected (t/get-gradient lhs))))))))
+
+  (with-open [model (m/new-model {:name "model"
+                                  :block (nn/identity-block)})
+              ndm (nd/new-base-manager)
+              trainer (t/new-trainer {:model model
+                                      :loss (l/l2-loss)
+                                      :initializer Initializer/ONES})
+              gc (t/new-gradient-collector trainer)]
+    (let [lhs (nd/create ndm (float-array [6 -9 -12 15 0 4]) [2 3])
+          rhs (nd/create ndm (float-array [2 3 -4]) [3 1])
+          expected (nd/create ndm (float-array [24 -54 96 60 0 -32]) [2 3])]
+      (t/attach-gradient lhs)
+      (let [result (nd/dot (nd/* lhs lhs) rhs)]
+        (t/backward gc result)
+        (let [grad (t/get-gradient lhs)]
+          (is (= expected grad))
+          (.close grad)
+          (is (= expected (t/get-gradient lhs))))))))

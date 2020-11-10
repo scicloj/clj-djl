@@ -9,12 +9,21 @@
   (.setBlock model block)
   model)
 
+(defn set-datatype [model data-type]
+  (.setDataType model data-type)
+  model)
+
 (defn get-block [model]
   (.getBlock model))
 
 (defn set-property [model k v]
   (.setProperty model k v)
   model)
+
+(defn new-model [{:keys [name block data-type]}]
+  (cond-> (Model/newInstance name)
+    block (set-block block)
+    data-type (set-datatype data-type)))
 
 (defn save [model dir name]
   (.save model dir name)

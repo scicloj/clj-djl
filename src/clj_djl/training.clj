@@ -55,8 +55,16 @@
   (.initialize trainer (into-array Shape shapes))
   trainer)
 
-(defn new-trainer [model config]
-  (.newTrainer model config))
+(defn new-trainer
+  ([model config]
+   (.newTrainer model config))
+  ([{:keys [model loss devices data-manager initializer optimizer]}]
+   (.newTrainer model
+                (cond-> (DefaultTrainingConfig. loss)
+                  devices (.optDevices devices)
+                  data-manager (.optDataManager data-manager)
+                  initializer (.optInitializer initializer)
+                  optimizer (.optOptimizer optimizer)))))
 
 (defn step [trainer]
   (.step trainer))
