@@ -65,11 +65,15 @@
             bias 4.2
             data (nd/random-normal manager [ndata (nd/size weight 0)])
             label (nd/+ (nd/dot data weight) bias)
-            ;; add nois?
+            ;; add noise
+            label-with-noise (nd/+ label
+                                   (nd/random-normal
+                                    manager
+                                    0 0.01 (nd/get-shape label) :float32 (nd/get-device manager)))
             sampling (* batchsize (count (t/get-devices config)))
             dataset (-> (dataset/new-array-dataset-builder)
                         (dataset/set-data data)
-                        (dataset/opt-labels label)
+                        (dataset/opt-labels label-with-noise)
                         (dataset/set-sampling sampling false)
                         (dataset/build))
             ]
@@ -84,4 +88,5 @@
                 (.close batch)))
             (let [loss-value (.getAccumulator (t/get-loss trainer) EvaluatorTrainingListener/TRAIN_EPOCH)
                   expected 0.001]
-              (is (< loss-value expected)))))))))
+              (is (< loss-value expected))
+              loss-value)))))))
