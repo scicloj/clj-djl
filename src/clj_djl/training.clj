@@ -18,8 +18,10 @@
 (defn new-training-config [loss]
   (DefaultTrainingConfig. loss))
 
-(defn training-config [{:keys [loss devices data-manager initializer optimizer]}]
+(defn default-training-config [{:keys [loss devices data-manager initializer optimizer evaluator listeners]}]
   (cond-> (DefaultTrainingConfig. loss)
+    (sequential? listeners) (.addTrainingListeners (into-array TrainingListener listeners))
+    evaluator (.addEvaluator evaluator)
     devices (.optDevices devices)
     data-manager (.optDataManager data-manager)
     initializer (.optInitializer initializer)
@@ -139,3 +141,9 @@
 
 (defn backward [gc target]
   (.backward gc target))
+
+(defn get-devices [config]
+  (vec (.getDevices config)))
+
+(defn get-loss [trainer]
+  (.getLoss trainer))

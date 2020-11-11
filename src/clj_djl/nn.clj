@@ -28,12 +28,11 @@
 (defn new-linear-builder []
   (Linear/builder))
 
-(defn linear-block [options]
-  (let [{:keys [bias units] :or {bias true}} options]
-    (-> (Linear/builder)
-        (.optBias bias)
-        (.setUnits units)
-        (.build))))
+(defn linear-block [{:keys [bias units]}]
+  (cond-> (Linear/builder)
+    bias (.optBias bias)
+    units (.setUnits units)
+    true (.build)))
 
 (defn opt-bias [builder bias]
   (.optBias builder bias))

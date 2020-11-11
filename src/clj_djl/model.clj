@@ -45,3 +45,6 @@
 
 (defn get-parameters [layer]
   (.getParameters layer))
+
+(defn get-ndmanager [model]
+  (.getNDManager model))

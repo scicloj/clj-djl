@@ -55,8 +55,10 @@
 
 (defn size
   "calc the seize of a ndarray."
-  [ndarray]
-  (.size ndarray))
+  ([ndarray]
+   (.size ndarray))
+  ([ndarray axis]
+   (.size ndarray axis)))
 
 (defn scalar? [ndarray]
   (.isScalar ndarray))
