@@ -88,5 +88,4 @@
                 (.close batch)))
             (let [loss-value (.getAccumulator (t/get-loss trainer) EvaluatorTrainingListener/TRAIN_EPOCH)
                   expected 0.001]
-              (is (< loss-value expected))
-              loss-value)))))))
+              (is (< loss-value expected)))))))))
