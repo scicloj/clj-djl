@@ -4,9 +4,16 @@
            [ai.djl.ndarray NDArray]
            [ai.djl.training.dataset Dataset$Usage]))
 
-(defn set-sampling [builder batch-size drop-last]
-  (.setSampling builder batch-size drop-last)
-  builder)
+(defn set-sampling
+  ([builder sampler]
+   (.setSampling builder sampler)
+   builder)
+  ([builder batch-size random]
+   (.setSampling builder batch-size random)
+   builder)
+  ([builder batch-size random drop-last]
+   (.setSampling builder batch-size random)
+   builder))
 
 (defn build [builder]
   (.build builder))
@@ -71,6 +78,17 @@
     (.optUsage builder (usage-map usage))
     builder))
 
-#_(defn build-dataset [config]
-  (let [{:keys [dataset usage sampling]} config]
+#_(defn array-dataset [{:keys [data sampler
+                             labels data-batchfier device executor label-batchfier
+                             limit pipeline target-pipeline]}]
+  (cond-> (ArrayDataset$Builder.)
+    (sequential? data) (.setData (into-array ai.djl.ndarray.NDArray data))
+    sampler (if (instance? ai.djl.training.dataset.Sampler sampling)
+              (.setSampling sampler)
+              (if (nil? (sampler :drop-last))
+                (.setSampling (:batch-size sampler) (:random sampler))
+                (.setSampling (:batch-size sampler) (:random sampler) (:drop-last sampler))))
+    (sequential? labels) (.optLabels (into-array ai.djl.ndarray.NDArray labels))
+    data-batchfier (.optDataBatchifier data-batchfier)
+    device (.optDevice device)
     ))
