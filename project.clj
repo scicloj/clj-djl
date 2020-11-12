@@ -22,4 +22,13 @@
                  ;;[ai.djl.tensorflow/tensorflow-native-auto "2.3.0"]
                  ]
   :main ^:skip-aot clj-djl.core
-  :repl-options {:init-ns clj-djl.core})
+  :repl-options {:init-ns clj-djl.core}
+  :profiles {:codox
+             {:dependencies [[codox-theme-rdash "0.1.2"]]
+              :plugins [[lein-codox "0.10.7"]]
+              :codox {:project {:name "clj-djl"}
+                      :themes [:rdash]
+                      :source-paths ["src"]
+                      :source-uri "https://github.com/kimim/clj-djl/blob/master/{filepath}#L{line}"
+                      :output-path "docs"}}}
+  :aliases {"codox" ["with-profile" "codox" "codox"]})
