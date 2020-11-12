@@ -183,12 +183,20 @@
 (defmulti create
   (fn [manager data & more]
     (cond
-      (.isArray (.getClass data)):array
+      (nil? data) :nil
+      (.isArray (.getClass data)) :array
       (or (number? data) (boolean? data) (string? data)) :primitive
       (sequential? data) :sequential
       (instance? ai.djl.ndarray.types.Shape data) :shape
       ;;(instance? tech.ml.dataset.impl.dataset.Dataset data) :dataset
       )))
+
+(defmethod create :nil
+  ([manager data]
+   (.create manager (new-shape)))
+  ([manager data shape]
+   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
+     (.create manager local-shape))))
 
 (defmethod create :array
   ([manager data]
@@ -352,13 +360,18 @@
 (defn +! [array0 array1]
   (.addi array0 array1))
 
-(defn - [array0 array1]
-  (.sub array0 array1))
+(defn -
+  ([array0]
+   (.neg array0))
+  ([array0 array1]
+   (.sub array0 array1)))
 
 (defn -!
   "substract element wise in place"
-  [array0 array1]
-  (.subi array0 array1))
+  ([array0]
+   (.negi array0))
+  ([array0 array1]
+   (.subi array0 array1)))
 
 (defn * [array0 array1]
   (.mul array0 array1))
