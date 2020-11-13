@@ -2,7 +2,7 @@
   (:import [ai.djl.training.dataset Dataset
             ArrayDataset ArrayDataset$Builder]
            [ai.djl.ndarray NDArray]
-           [ai.djl.training.dataset Dataset$Usage]))
+           [ai.djl.training.dataset Dataset$Usage BatchSampler SequenceSampler RandomSampler]))
 
 (defn set-sampling
   ([builder sampler]
@@ -26,6 +26,9 @@
    (.prepare ds progress)
    ds))
 
+(defn array-dataset-builder []
+  (ArrayDataset$Builder.))
+
 (defn new-array-dataset-builder []
   (ArrayDataset$Builder.))
 
@@ -37,12 +40,12 @@
   (.getData ds manager))
 
 (defn iter-seq
-([iterable]
- (iter-seq iterable (.iterator iterable)))
-([iterable iter]
- (lazy-seq
-  (when (.hasNext iter)
-    (cons (.next iter) (iter-seq iterable iter))))))
+  ([iterable]
+   (iter-seq iterable (.iterator iterable)))
+  ([iterable iter]
+   (lazy-seq
+    (when (.hasNext iter)
+      (cons (.next iter) (iter-seq iterable iter))))))
 
 (defn get-data-iterator [ds manager]
   (iter-seq (get-data ds manager)))
@@ -78,6 +81,27 @@
     (.optUsage builder (usage-map usage))
     builder))
 
+(defn batch-sampler
+  "Creates a new instance of BatchSampler that samples from the given SubSampler,
+  and yields a mini-batch of batchsize, with optional droplast(true, false) to
+  drop the remaining samples."
+  ([subsampler batchsize]
+   (BatchSampler. subsampler batchsize))
+  ([subsampler batchsize droplast]
+   (BatchSampler. subsampler batchsize droplast)))
+
+(defn sequence-sampler
+  "SequenceSampler samples the data from [0, dataset.size) sequentially."
+  []
+  (SequenceSampler.))
+
+(defn random-sampler
+  "Creates a new instance of RandomSampler with an optional seed"
+  ([]
+   (RandomSampler.))
+  ([seed]
+   (RandomSampler. seed)))
+
 #_(defn array-dataset [{:keys [data sampler
                              labels data-batchfier device executor label-batchfier
                              limit pipeline target-pipeline]}]
@@ -92,3 +116,10 @@
     data-batchfier (.optDataBatchifier data-batchfier)
     device (.optDevice device)
     ))
+
+(defn to-apair
+  "Convert dataset to a pair of two arrays. First item is the data, and the second
+  item is the labels"
+  [dataset]
+  (let [pair (.toArray dataset)]
+    [(.getKey pair) (.getValue pair)]))
