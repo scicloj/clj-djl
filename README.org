@@ -1,4 +1,6 @@
-[[https://img.shields.io/clojars/v/clj-djl.svg]]
+#+BEGIN_HTML
+<a href="https://clojars.org/clj-djl" title="https://clojars.org/clj-djl"><img src="https://img.shields.io/clojars/v/clj-djl.svg" alt="https://img.shields.io/clojars/v/clj-djl.svg"></a>
+#+END_HTML
 
 * clj-djl
 
