@@ -123,3 +123,7 @@
   [dataset]
   (let [pair (.toArray dataset)]
     [(.getKey pair) (.getValue pair)]))
+
+(defn random-split
+  [dataset & ratios]
+  (.randomSplit dataset (int-array ratios)))

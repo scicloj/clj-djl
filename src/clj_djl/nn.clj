@@ -22,6 +22,13 @@
 (defn tanh [data]
   (Activation/tanh data))
 
+(defn softplus-block []
+  (Activation/softPlusBlock))
+
+(defn softplus
+  [data]
+  (Activation/softPlus data))
+
 (defn sequential-block []
   (SequentialBlock.))
 

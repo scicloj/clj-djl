@@ -391,6 +391,12 @@
 (defn = [array0 array1]
   (.eq array0 array1))
 
+(defn all-close
+  ([array0 array1]
+   (.allClose array0 array1))
+  ([array0 array1 rtol atol equal-nan]
+   (.allClose array0 array1 rtol atol equal-nan)))
+
 (defn exp [array0]
   (.exp array0))
 

@@ -1,11 +1,12 @@
 (ns clj-djl.training
-  (:require [clj-djl.engine :as engine])
+  (:require [clj-djl.engine :as engine]
+            [clj-djl.ndarray :as nd])
   (:import [ai.djl.training.util ProgressBar]
            [ai.djl.training.dataset RandomAccessDataset]
            [ai.djl.training DefaultTrainingConfig TrainingConfig ParameterStore]
            [ai.djl.training.loss Loss]
            [ai.djl.training EasyTrain]
-           [ai.djl.training.evaluator Accuracy]
+           [ai.djl.training.evaluator Accuracy TopKAccuracy]
            [ai.djl.training.listener TrainingListener LoggingTrainingListener]
            [ai.djl.ndarray.types Shape]
            [ai.djl.training.dataset Batch]
@@ -48,6 +49,37 @@
 
 (defn new-accuracy []
   (Accuracy.))
+
+(def accuracy new-accuracy)
+
+(defn new-topk-accuracy
+  ([topk]
+   (TopKAccuracy. topk))
+  ([index topk]
+   (TopKAccuracy. index topk))
+  ([name index topk]
+   (TopKAccuracy. name index topk)))
+
+(def topk-accuracy new-topk-accuracy)
+
+(defn add-accumulator
+  "Adds an accumulator to the accuracy for the results of the evaluation with the
+  given key."
+  [acc key]
+  (.addAccumulator acc key)
+  acc)
+
+(defn update-accumulator
+  "Updates the accuracy with the given key based on a NDList of labels and
+  predictions."
+  [acc key label-list pred-list]
+  (.updateAccumulator acc key (nd/ndlist (nd/to-type (.head label-list) :int32 false)) pred-list)
+  acc)
+
+(defn get-accumulator
+  "Returns the accumulated evaluator value."
+  [acc key]
+  (.getAccumulator acc key))
 
 (defn add-training-listeners [config listener]
   (.addTrainingListeners config listener)
