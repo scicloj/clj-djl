@@ -147,3 +147,10 @@
 
 (defn get-loss [trainer]
   (.getLoss trainer))
+
+(defn get-training-result [trainer]
+  (let [result (.getTrainingResult trainer)]
+    (assoc {}
+           :epoch (.getEpoch result)
+           :train-loss (.getTrainLoss result)
+           :validate-loss (.getValidateLoss result))))
