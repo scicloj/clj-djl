@@ -20,6 +20,6 @@
         (m/load loadmodel "build/tmp/test/models" "save-and-load")
         (let [load-parameters (nn/get-parameters block)]
           (is (= (.size load-parameters) (.size saved-parameters)))
-          (is (= (.getArray (.getValue (first saved-parameters)))
-                 (.getArray (.getValue (first load-parameters))))))
-        ))))
+          (is (reduce #(and %1 %2)
+                      (map #(= (.getArray (.getValue %1)) (.getArray (.getValue %2)))
+                           saved-parameters load-parameters))))))))
