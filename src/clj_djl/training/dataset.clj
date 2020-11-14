@@ -2,7 +2,8 @@
   (:import [ai.djl.training.dataset Dataset
             ArrayDataset ArrayDataset$Builder]
            [ai.djl.ndarray NDArray]
-           [ai.djl.training.dataset Dataset$Usage BatchSampler SequenceSampler RandomSampler]))
+           [ai.djl.training.dataset Dataset$Usage BatchSampler SequenceSampler RandomSampler
+            Batch]))
 
 (defn set-sampling
   ([builder sampler]
@@ -127,3 +128,6 @@
 (defn random-split
   [dataset & ratios]
   (.randomSplit dataset (int-array ratios)))
+
+#_(defn new-batch [manager data-list label-list size data-batchifier label-batchifier progress progress-total]
+  (Batch. manager data-list label-list size data-batchifier label-batchifier progress progress-total))

@@ -1,8 +1,12 @@
 (ns clj-djl.nn
+  (:require [clj-djl.ndarray :as nd])
   (:import [ai.djl.nn Activation SequentialBlock]
            [ai.djl.nn.core Linear]
            [ai.djl.nn Blocks]
-           [ai.djl.training.initializer NormalInitializer]))
+           [ai.djl.training.initializer NormalInitializer]
+           [ai.djl.nn.convolutional Conv2d]
+           [ai.djl.nn.norm BatchNorm]
+           [ai.djl.ndarray.types Shape]))
 
 (defn relu-block []
   (Activation/reluBlock))
@@ -40,6 +44,31 @@
     bias (.optBias bias)
     units (.setUnits units)
     true (.build)))
+
+(defn batchnorm-block [& {:keys [axis center epsilon momentum scale]}]
+  (cond-> (BatchNorm/builder)
+    axis (.optAxis axis)
+    center (.optCenter center)
+    epsilon (.optEspilon epsilon)
+    momentum (.optMomentum momentum)
+    scale (.optScale scale)
+    true (.build)))
+
+
+(defn cov2d-block [{:keys [kernel-shape filters bias dilation groups padding stride]}]
+  (cond-> (Conv2d/builder)
+    kernel-shape (.setKernelShape (if (sequential? kernel-shape)
+                                    (nd/new-shape kernel-shape)
+                                    kernel-shape))
+    filters (.setFilters filters)
+    bias (.optBias bias)
+    dilation (.optDilation dilation)
+    groups (.optGroups groups)
+    padding (.optPadding padding)
+    stride (.optStride stride)
+    true (.build)))
+
+
 
 (defn opt-bias [builder bias]
   (.optBias builder bias))
@@ -83,3 +112,14 @@
    (NormalInitializer.))
   ([sigma]
    (NormalInitializer. sigma)))
+
+(defn initialize [block manager datatype & input-shapes]
+  (let [datatype (nd/convert-datatype datatype)]
+    (.initialize block manager datatype (into-array Shape (map #(nd/new-shape %) input-shapes)))
+    block))
+
+(defn get-parameters [block]
+  (.getParameters block))
+
+(defn clear [block]
+  (.clear block))

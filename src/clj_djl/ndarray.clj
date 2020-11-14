@@ -70,7 +70,7 @@
                    :float32 DataType/FLOAT32
                    :float64 DataType/FLOAT64})
 
-(defn- convert-datatype [data-type]
+(defn convert-datatype [data-type]
   (condp clojure.core/= (type data-type)
     java.lang.String (DataType/valueOf (.toUpperCase data-type))
     clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name data-type)))
