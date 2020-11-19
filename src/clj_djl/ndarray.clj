@@ -78,7 +78,10 @@
 
 (defn zeros
   ([manager shape]
-   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
+   (let [local-shape (cond
+                       (sequential? shape) (new-shape shape)
+                       (integer? shape) (new-shape shape)
+                       :else shape)]
      (.zeros manager local-shape)))
   ([manager shape data-type]
    (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
@@ -95,7 +98,10 @@
 
 (defn ones
   ([manager shape]
-   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
+   (let [local-shape (cond
+                       (sequential? shape) (new-shape shape)
+                       (integer? shape) (new-shape shape)
+                       :else shape)]
      (.ones manager local-shape)))
   ([manager shape data-type]
    (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
@@ -318,6 +324,8 @@
   ([manager shape]
    (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
      (.randomNormal manager local-shape)))
+  ([manager loc scale shape]
+   (random-normal manager loc scale shape :float32))
   ([manager loc scale shape data-type]
    (let [local-shape (if (sequential? shape) (new-shape shape) shape)
          local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)]
@@ -510,9 +518,14 @@
            (sequential? index) (NDIndex. (long-array index))
            (string? index) (NDIndex. index (object-array []))
            :else index)]
-     (if (clojure.core/fn? val-or-fun)
+     (cond
+       (clojure.core/fn? val-or-fun)
        (let [value (val-or-fun (get array local-index))]
          (.set array local-index value))
+       (sequential? val-or-fun)
+       (.set array local-index
+             (.toType (create (.getManager array) val-or-fun) (.getDataType array) false))
+       :else
        (.set array local-index val-or-fun))
      array)))
 

@@ -21,7 +21,9 @@
 
 (defn default-training-config [{:keys [loss devices data-manager initializer optimizer evaluator listeners]}]
   (cond-> (DefaultTrainingConfig. loss)
-    (sequential? listeners) (.addTrainingListeners (into-array TrainingListener listeners))
+    listeners (.addTrainingListeners (if (sequential? listeners)
+                                       (into-array TrainingListener listeners)
+                                       listeners))
     evaluator (.addEvaluator evaluator)
     devices (.optDevices devices)
     data-manager (.optDataManager data-manager)
@@ -88,9 +90,16 @@
 (defn new-default-training-listeners []
   (into-array TrainingListener [(LoggingTrainingListener.)]))
 
-(defn initialize [trainer shapes]
-  (.initialize trainer (into-array Shape shapes))
-  trainer)
+(defn initialize
+  ([trainer shapes]
+   (cond
+     (sequential? shapes) (.initialize trainer (into-array Shape shapes))
+     (instance? Shape shapes) (.initialize trainer (into-array Shape [shapes]))
+     :else (.initialize trainer (into-array Shape [shapes])))
+   trainer)
+  ([trainer shape & shapes]
+   (.initialize trainer (into-array Shape (cons shape shapes)))
+   trainer))
 
 (defn new-trainer
   ([model config]
@@ -119,9 +128,6 @@
 
 (defn iterate-dataset [trainer ds]
   (iter-seq (.iterateDataset trainer ds)))
-
-(defn train-batch [trainer batch]
-  (EasyTrain/trainBatch trainer batch))
 
 (defmacro as-consumer [f]
   `(reify java.util.function.Consumer
@@ -155,6 +161,12 @@
 
 (defn fit [trainer nepochs train-iter test-iter]
   (EasyTrain/fit trainer nepochs train-iter test-iter))
+
+(defn train-batch [trainer batch]
+  (EasyTrain/trainBatch trainer batch))
+
+(defn validate-batch [trainer batch]
+  (EasyTrain/validateBatch trainer batch))
 
 
 (defn gradient-collector []
