@@ -37,7 +37,8 @@
      (int? param1) (Shape. (long-array (cons param1 more)))
      (sequential? param1) (if (some? (first more))
                             (Shape. (long-array param1) (first more))
-                            (Shape. (long-array param1))))))
+                            (Shape. (long-array param1)))
+     (instance? NDArray param1) (.getShape param1))))
 
 (def new-shape shape)
 
@@ -94,7 +95,7 @@
 
 (defn zeros-like
   [ndarray]
-  (.zerosLike  ndarray))
+  (.zerosLike ndarray))
 
 (defn ones
   ([manager shape]
@@ -398,6 +399,18 @@
 
 (defn = [array0 array1]
   (.eq array0 array1))
+
+(defn < [array0 param1]
+  (.lt array0 param1))
+
+(defn > [array0 param1]
+  (.gt array0 param1))
+
+(defn <= [array0 param1]
+  (.lte array0 param1))
+
+(defn >= [array0 param1]
+  (.gte array0 param1))
 
 (defn all-close
   ([array0 array1]
