@@ -11,8 +11,9 @@
 (defn sgd
   ([]
    (Optimizer/sgd))
-  ([{:keys [tracker momentum]}]
+  ([{:keys [tracker momentum weight-decay]}]
    (cond-> (Optimizer/sgd)
      tracker (.setLearningRateTracker tracker)
      momentum (.optMomentum momentum)
+     weight-decay (.optWeightDecays weight-decay)
      true (.build))))

@@ -627,6 +627,9 @@
         (.mean ndarray axes)))
     (.mean ndarray)))
 
+(defn log10 [ndarray]
+  (.log10 ndarray))
+
 (defn trace
   ([ndarray offset axis1 axis2]
    (.trace ndarray offset axis1 axis2))

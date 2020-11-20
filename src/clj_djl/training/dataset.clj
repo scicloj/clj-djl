@@ -35,13 +35,19 @@
 
 (defn array-dataset [{:keys [data labels sampler batchsize shuffle droplast]}]
   (let [builder (cond-> (ArrayDataset$Builder.)
-                  data (.setData (into-array NDArray data))
-                  labels (.optLabels (into-array NDArray labels)))]
+                  data (.setData (cond
+                                   (instance? NDArray data) (into-array NDArray [data])
+                                   (sequential? data) (into-array NDArray data)
+                                   :else data))
+                  labels (.optLabels (cond
+                                       (instance? NDArray labels) (into-array NDArray [labels])
+                                       (sequential? labels) (into-array NDArray labels)
+                                       :else labels)))]
     (if sampler
       (.setSampling builder sampler)
-      (if droplast
+      (if (some? droplast)
         (.setSampling builder batchsize shuffle droplast)
-        (if (and batchsize shuffle)
+        (if (and (some? batchsize) (some? shuffle))
           (.setSampling builder batchsize shuffle))))
     (.build builder)))
 
