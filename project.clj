@@ -32,4 +32,5 @@
                       :source-paths ["src"]
                       :source-uri "https://github.com/kimim/clj-djl/blob/master/{filepath}#L{line}"
                       :output-path "docs"}}}
-  :aliases {"codox" ["with-profile" "codox" "codox"]})
+  :aliases {"codox" ["with-profile" "codox" "codox"]}
+  :repositories [["sonatype" "https://oss.sonatype.org/content/repositories/snapshots/"]])
