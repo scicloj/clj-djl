@@ -7,16 +7,17 @@
 
                  [org.slf4j/slf4j-simple "1.7.26"]
 
-                 [ai.djl/api "0.8.0"]
-                 [ai.djl/model-zoo "0.8.0"]
-                 [ai.djl/basicdataset "0.8.0"]
+                 [ai.djl/api "0.9.0-SNAPSHOT"]
+                 [ai.djl/model-zoo "0.9.0-SNAPSHOT"]
+                 [ai.djl/basicdataset "0.9.0-SNAPSHOT"]
 
-                 [ai.djl.mxnet/mxnet-engine "0.8.0"]
+                 [ai.djl.mxnet/mxnet-engine "0.9.0-SNAPSHOT"]
                  [ai.djl.mxnet/mxnet-native-auto "1.7.0-backport"]
 
                  [net.mikera/core.matrix "0.62.0"]
                  ;;[ai.djl.pytorch/pytorch-engine "0.8.0"]
                  ;;[ai.djl.pytorch/pytorch-native-auto "1.6.0"]
+                 [com.hypirion/clj-xchart "0.2.0"]
 
                  ;;[ai.djl.tensorflow/tensorflow-engine "0.8.0"]
                  ;;[ai.djl.tensorflow/tensorflow-native-auto "2.3.0"]
