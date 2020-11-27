@@ -412,6 +412,18 @@
 (defn >= [array0 param1]
   (.gte array0 param1))
 
+(defn argmax
+  ([^NDArray ndarray]
+   (.argMax ndarray))
+  ([^NDArray ndarray axis]
+   (.argMax ndarray axis)))
+
+(defn argmin
+  ([^NDArray ndarray]
+   (.argMin ndarray))
+  ([^NDArray ndarray axis]
+   (.argMin ndarray axis)))
+
 (defn all-close
   ([array0 array1]
    (.allClose array0 array1))
@@ -642,6 +654,9 @@
 
 (defn log10 [ndarray]
   (.log10 ndarray))
+
+(defn log [ndarray]
+  (.log ndarray))
 
 (defn trace
   ([ndarray offset axis1 axis2]

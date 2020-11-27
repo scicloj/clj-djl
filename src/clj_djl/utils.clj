@@ -7,7 +7,11 @@
      (catch Exception e#
        (println e#))))
 
-(defmacro as-function [f]
+#_(defmacro as-function [f]
   `(reify java.util.function.Function
      (apply [this arg#]
        (~f arg#))))
+
+(defn ^java.util.function.Function as-function [f]
+  (reify java.util.function.Function
+    (apply [this arg] (f arg))))

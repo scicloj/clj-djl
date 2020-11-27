@@ -1,12 +1,15 @@
 (ns clj-djl.nn
-  (:require [clj-djl.ndarray :as nd])
-  (:import [ai.djl.nn Activation SequentialBlock]
-           [ai.djl.nn.core Linear]
-           [ai.djl.nn Blocks]
-           [ai.djl.training.initializer NormalInitializer]
-           [ai.djl.nn.convolutional Conv2d]
-           [ai.djl.nn.norm BatchNorm]
-           [ai.djl.ndarray.types Shape]))
+  (:require
+   [clj-djl.ndarray :as nd]
+   [clj-djl.utils :as utils])
+  (:import
+   [ai.djl.nn Activation SequentialBlock]
+   [ai.djl.nn.core Linear]
+   [ai.djl.nn Blocks]
+   [ai.djl.training.initializer NormalInitializer]
+   [ai.djl.nn.convolutional Conv2d]
+   [ai.djl.nn.norm BatchNorm Dropout]
+   [ai.djl.ndarray.types Shape]))
 
 (defn relu-block []
   (Activation/reluBlock))
@@ -79,9 +82,11 @@
 (defn build [builder]
   (.build builder))
 
-;; defmulti
 (defn add [net block]
-  (.add net block)
+  (let [block (if (ifn? block)
+                (utils/as-function block)
+                block)]
+    (.add net block))
   net)
 
 (defn batch-flatten-block [& more]
@@ -123,3 +128,8 @@
 
 (defn clear [block]
   (.clear block))
+
+(defn dropout [{:keys [rate]}]
+  (cond-> (Dropout/builder)
+    rate (.optRate rate)
+    :always (.build)))
