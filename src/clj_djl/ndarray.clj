@@ -266,7 +266,8 @@
                  java.lang.Integer (IntBuffer/wrap (int-array data))
                  java.lang.Long (LongBuffer/wrap (long-array data))
                  java.lang.Float (FloatBuffer/wrap (float-array data))
-                 java.lang.Double (DoubleBuffer/wrap (double-array data)))
+                 java.lang.Double (DoubleBuffer/wrap (double-array data))
+                 (float-array data))
                data)
         indptr (if (sequential? indptr) (long-array indptr) indptr)
         indices (if (sequential? indices) (long-array indices) indices)
@@ -275,10 +276,32 @@
       (.createCSR manager data indptr indices shape)
       (.createCSR manager data indptr indices shape (first device)))))
 
+(defn create-row-sparse [manager data data-shape indices shape & device]
+  (let [data (if (sequential? data)
+               (condp clojure.core/= (type (first data))
+                 java.lang.Byte (ByteBuffer/wrap (byte-array data))
+                 java.lang.Integer (IntBuffer/wrap (int-array data))
+                 java.lang.Long (LongBuffer/wrap (long-array data))
+                 java.lang.Float (FloatBuffer/wrap (float-array data))
+                 java.lang.Double (DoubleBuffer/wrap (double-array data))
+                 (float-array data))
+               data)
+        data-shape (if (sequential? data-shape) (new-shape data-shape) data-shape)
+        shape (if (sequential? shape) (new-shape shape) shape)
+        indices (if (sequential? indices) (long-array indices) indices)]
+    (if (nil? device)
+      (.createRowSparse manager data data-shape indices shape)
+      (.createRowSparse manager data data-shape indices shape (first device)))))
+
 (defn is-sparse [ndarray]
   (.isSparse ndarray))
 
 (def sparse? is-sparse)
+
+(defn duplicate [ndarray]
+  (.duplicate ndarray))
+
+(def dup duplicate)
 
 (defmulti ndlist (fn [& more]
                    (type (first more))))

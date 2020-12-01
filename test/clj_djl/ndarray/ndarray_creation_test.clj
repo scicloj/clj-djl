@@ -126,6 +126,108 @@
                (is (= (array 9) (expected 2)))
                (is (nd/sparse? nd))))))
 
+(deftest create-row-sparse-matrix
+  (with-open [ndm (nd/new-base-manager)]
+    (let [expected [1 2 3 4 5 6]
+          buf (FloatBuffer/wrap (float-array expected))
+          indices (long-array [0 1 3])
+          nd (nd/create-row-sparse ndm buf (nd/shape 3 2) indices (nd/shape 4 2))
+          array (nd/to-array nd)]
+      (is (= (aget array 0) (expected 0)))
+      (is (= (aget array 1) (expected 1)))
+      (is (= (aget array 2) (expected 2)))
+      (is (= (aget array 3) (expected 3)))
+      (is (= (aget array 6) (expected 6)))
+      (is (= (aget array 7) (expected 7)))
+      (is (nd/is-sparse nd)))
+    (let [expected [1 2 3 4 5 6]
+          indices [0 1 3]
+          nd (nd/create-row-sparse ndm expected (nd/shape 3 2) indices (nd/shape 4 2))
+          array (nd/to-array nd)]
+      (is (= (aget array 0) (expected 0)))
+      (is (= (aget array 1) (expected 1)))
+      (is (= (aget array 2) (expected 2)))
+      (is (= (aget array 3) (expected 3)))
+      (is (= (aget array 6) (expected 6)))
+      (is (= (aget array 7) (expected 7)))
+      (is (nd/is-sparse nd)))
+    (let [expected [1 2 3 4 5 6]
+          indices [0 1 3]
+          nd (nd/create-row-sparse ndm expected [3 2] indices [4 2])
+          array (nd/to-array nd)]
+      (is (= (aget array 0) (expected 0)))
+      (is (= (aget array 1) (expected 1)))
+      (is (= (aget array 2) (expected 2)))
+      (is (= (aget array 3) (expected 3)))
+      (is (= (aget array 6) (expected 6)))
+      (is (= (aget array 7) (expected 7)))
+      (is (nd/is-sparse nd)))))
+
+;; TODO: Coo and convert to sparce test
+
+
+(deftest duplicate-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [array (nd/zeros ndm 5)
+          expected (nd/create ndm (repeat 5 (float 0)))
+          duplicate (nd/duplicate array)]
+      (is (= duplicate expected))
+      (is (not (identical? duplicate expected))))
+    ;; multi dim
+    (let [array (nd/ones ndm [2 3])
+          expected (nd/create ndm (repeat 6 (float 0)) [2 3])
+          duplicate (nd/dup array)]
+      (is (= duplicate expected))
+      (is (not (identical? duplicate expected))))
+    ;; scalar
+    (let [array (nd/zeros ndm [])
+          expected (nd/create ndm (float 0))
+          duplicate (nd/dup array)]
+      (is (= duplicate expected))
+      (is (not (identical? duplicate expected))))
+    ;; zero dim
+    (let [array (nd/zeros ndm [0 1])
+          expected (nd/create ndm [0 1])
+          duplicate (nd/dup array)]
+      (is (= duplicate expected))
+      (is (not (identical? duplicate expected))))))
+
+(deftest zeros-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [array (nd/zeros ndm [5])
+          expected (nd/create ndm (repeat 5 (float 0)))]
+      (is (= array expected)))
+    ;; multi-dim
+    (let [array (nd/zeros ndm [2 3])
+          expected (nd/create ndm (repeat 6 (float 0)) [2 3])]
+      (is (= array expected)))
+    ;; scalar
+    (let [array (nd/zeros ndm [])
+          expected (nd/create ndm (float 0))]
+      (is (= array expected)))
+    ;; zero dim
+    (let [array (nd/zeros ndm [0 1])
+          expected (nd/create ndm (nd/shape [0 1]))]
+      (is (= array expected)))))
+
+(deftest ones-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [array (nd/ones ndm [5])
+          expected (nd/create ndm (repeat 5 (float 1)))]
+      (is (= array expected)))
+    ;; multi-dim
+    (let [array (nd/ones ndm [2 3])
+          expected (nd/create ndm (repeat 6 (float 1)) [2 3])]
+      (is (= array expected)))
+    ;; scalar
+    (let [array (nd/ones ndm [])
+          expected (nd/create ndm (float 1))]
+      (is (= array expected)))
+    ;; zero dim
+    (let [array (nd/ones ndm [0 1])
+          expected (nd/create ndm (nd/shape [0 1]))]
+      (is (= array expected)))))
+
 (deftest size-test
   (testing "ndarray/size."
     (def ndm (nd/new-base-manager))
