@@ -30,6 +30,7 @@
    (shape []))
   ([param1 & more]
    (cond
+     (instance? Shape param1) param1
      (instance? ai.djl.util.PairList param1) (Shape. param1)
      (.isArray (class param1)) (if (some? (first more))
                                  (Shape. param1 (first more))
@@ -76,6 +77,12 @@
     java.lang.String (DataType/valueOf (.toUpperCase data-type))
     clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name data-type)))
     data-type))
+
+(defn- data-type [datatype]
+  (condp clojure.core/= (type datatype)
+    java.lang.String (DataType/valueOf (.toUpperCase datatype))
+    clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name datatype)))
+    datatype))
 
 (defn zeros
   ([manager shape]
@@ -710,3 +717,19 @@
   "Returns the absolute value of this NDArray element-wise"
   [ndarray]
   (.abs ndarray))
+
+(defn full
+  ([manager shape data]
+   (let [shape (clj-djl.ndarray/shape shape)
+         data (if (float? data) (float data) data)]
+     (.full manager shape data)))
+  ([manager shape data data-type]
+   (let [shape (clj-djl.ndarray/shape shape)
+         data-type (clj-djl.ndarray/data-type data-type)
+         data (if (float? data) (float data) data)]
+     (.full manager shape data data-type)))
+  ([manager shape data data-type device]
+   (let [shape (clj-djl.ndarray/shape shape)
+         data-type (clj-djl.ndarray/data-type data-type)
+         data (if (float? data) (float data) data)]
+     (.full manager shape data data-type device))))
