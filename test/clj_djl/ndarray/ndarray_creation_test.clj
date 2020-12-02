@@ -1,6 +1,7 @@
 (ns clj-djl.ndarray.ndarray-creation-test
   (:require [clojure.test :refer :all]
             [clj-djl.ndarray :as nd]
+            [clj-djl.engine :as engine]
             [clj-djl.utils :refer :all]
             [clojure.core.matrix :as matrix])
   (:import [ai.djl.ndarray.types DataType]
@@ -289,3 +290,84 @@
     (let [array (nd/ones ndm [0 1])
           expected (nd/create ndm (nd/shape 0 1))]
       (is (= array expected)))))
+
+(deftest eye-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [array (nd/eye ndm 2)
+          expected (nd/create ndm (float-array [1 0 0 1]) (nd/shape 2 2))]
+      (is (= array expected)))
+    (let [array (nd/eye ndm 2 3 0)
+          expected (nd/create ndm (float-array [1 0 0 0 1 0]) (nd/shape 2 3))]
+      (is (= array expected)))
+    (let [array (nd/eye ndm 3 4 0)
+          expected (nd/create ndm (float-array [1 0 0 0, 0 1 0 0, 0 0 1 0]) (nd/shape 3 4))]
+      (is (= array expected)))))
+
+(deftest linspace-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [array (nd/linspace ndm 0. 9. 10 true (nd/get-device ndm))
+          expected (nd/arange ndm 10.)]
+      (is (= array expected)))
+    (let [array (nd/linspace ndm 0. 10. 10 false (nd/get-device ndm))
+          expected (nd/arange ndm 10.)]
+      (is (= array expected)))
+    (let [array (nd/linspace ndm 10 0 10 false (nd/get-device ndm))
+          expected (nd/create ndm (float-array (range 10 0 -1)))]
+      (is (= array expected)))
+    (let [array (nd/linspace ndm 10 10 10)
+          expected (nd/* (nd/ones ndm [10]) 10)]
+      (is (= array expected)))
+    ;; corner case
+    (let [array (nd/linspace ndm 0 10 0)
+          expected (nd/create ndm (nd/shape 0))]
+      (is (= array expected)))))
+
+
+#_(deftest random-integer-test
+  (let [test-cases {0 2, 1000000 2000000, -1234567 -1234567}]
+    (with-open [ndm (nd/new-base-manager)]
+      (for [[low high] test-cases]
+        (let [rand-long (nd/random-integer ndm low high (nd/shape 100 100) :int64)
+              mean (-> (nd/to-type rand-long :float64 false)
+                       (nd/mean)
+                       (nd/get-element))
+              max (-> (nd/max rand-long)
+                      (nd/get-element))
+              min (-> (nd/min rand-long)
+                      (nd/get-element))]
+          (is (< max high))
+          (is (>= min low))
+          (is (and (>= mean low)
+                   (< mean high))))))))
+
+(deftest random-uniform-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [uniform (nd/random-uniform ndm 0 10 [1000 1000])]
+      (is (>= (nd/get-element (nd/min uniform)) 0))
+      (is (< (nd/get-element (nd/min uniform)) 10))
+      (is (< (Math/abs (- (nd/get-element (nd/mean uniform)) 5.)) 0.01)))))
+
+(deftest random-normal-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [normal (nd/random-normal ndm [1000 1000])
+          mean (nd/mean normal)
+          std (-> normal (nd/- mean) (nd/pow 2) (nd/mean))]
+      (is (< (Math/abs (- (nd/get-element mean) 0.)) 0.01))
+      (is (< (Math/abs (- (nd/get-element std) 1.)) 0.01)))))
+
+(deftest fixed-seed-test
+  (with-open [ndm (nd/new-base-manager)]
+    (if-not (= "TensorFlow" (engine/get-engine-name (engine/get-instance)))
+      (let [fixed-seed 1234]
+        (let [_ (.setRandomSeed (engine/get-instance) fixed-seed)
+              expected-uniform (nd/random-uniform ndm -10 10 [10 10])
+              _ (.setRandomSeed (engine/get-instance) fixed-seed)
+              actual-uniform (nd/random-uniform ndm -10 10 [10 10])]
+          (is (< (Math/abs (nd/get-element (nd/sum (nd/- expected-uniform actual-uniform))))
+                 0.001)))
+        (let [_ (.setRandomSeed (engine/get-instance) fixed-seed)
+              expected-normal (nd/random-normal ndm [10 10])
+              _ (.setRandomSeed (engine/get-instance) fixed-seed)
+              actual-normal (nd/random-normal ndm [10 10])]
+          (is (< (Math/abs (nd/get-element (nd/sum (nd/- expected-normal actual-normal))))
+                 0.001)))))))

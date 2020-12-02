@@ -415,13 +415,25 @@
 (defn * [array0 array1]
   (.mul array0 array1))
 
+(defn mul [array0 array1]
+  (.mul array0 array1))
+
 (defn *! [array0 array1]
+  (.muli array0 array1))
+
+(defn muli [array0 array1]
   (.muli array0 array1))
 
 (defn / [array0 array1]
   (.div array0 array1))
 
+(defn div [array0 array1]
+  (.div array0 array1))
+
 (defn ** [array0 array1]
+  (.pow array0 array1))
+
+(defn pow [array0 array1]
   (.pow array0 array1))
 
 (defn dot [array0 array1]
@@ -733,3 +745,30 @@
          data-type (clj-djl.ndarray/data-type data-type)
          data (if (float? data) (float data) data)]
      (.full manager shape data data-type device))))
+
+(defn eye
+  ([manager rows]
+   (.eye manager rows))
+  ([manager rows k]
+   (.eye manager rows k))
+  ([manager rows cols k]
+   (.eye manager rows cols k))
+  ([manager rows cols k data-type]
+   (.eye manager rows cols k (clj-djl.ndarray/data-type data-type)))
+  ([manager rows cols k data-type device]
+   (.eye manager rows cols k (clj-djl.ndarray/data-type data-type) device)))
+
+(defn float-or-int
+  [n]
+  (cond
+    (float? n) (float n)
+    (int? n) (int n)
+    :else n))
+
+(defn linspace
+  ([manager start stop n]
+   (.linspace manager start stop n))
+  ([manager start stop n endpoint]
+   (.linspace manager start stop n endpoint))
+  ([manager start stop n endpoint device]
+   (.linspace manager start stop n endpoint device)))
