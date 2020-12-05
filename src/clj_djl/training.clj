@@ -159,8 +159,11 @@
   ([trainer]
    (.newGradientCollector trainer)))
 
-(defn fit [trainer nepochs train-iter test-iter]
-  (EasyTrain/fit trainer nepochs train-iter test-iter))
+(defn fit
+  ([trainer nepochs train-iter]
+   (EasyTrain/fit trainer nepochs train-iter nil))
+  ([trainer nepochs train-iter test-iter]
+   (EasyTrain/fit trainer nepochs train-iter test-iter)))
 
 (defn train-batch [trainer batch]
   (EasyTrain/trainBatch trainer batch))
