@@ -118,9 +118,9 @@
   ([sigma]
    (NormalInitializer. sigma)))
 
-(defn initialize [block manager datatype & input-shapes]
-  (let [datatype (nd/convert-datatype datatype)]
-    (.initialize block manager datatype (into-array Shape (map #(nd/new-shape %) input-shapes)))
+(defn initialize [block manager datatype- & input-shapes]
+  (let [datatype (nd/datatype datatype-)]
+    (.initialize block manager datatype (into-array Shape (map #(nd/shape %) input-shapes)))
     block))
 
 (defn get-parameters [block]

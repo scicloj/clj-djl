@@ -44,7 +44,6 @@
 (defn default-device []
   (Device/defaultDevice))
 
-
 (defn get-shape [ndarray]
   (.getShape ndarray))
 
@@ -67,20 +66,7 @@
 (defn scalar? [ndarray]
   (.isScalar ndarray))
 
-(def datatype-map {:int8 DataType/INT8
-                   :int32 DataType/INT32
-                   :int64 DataType/INT64
-                   :float16 DataType/FLOAT16
-                   :float32 DataType/FLOAT32
-                   :float64 DataType/FLOAT64})
-
-(defn convert-datatype [data-type]
-  (condp clojure.core/= (type data-type)
-    java.lang.String (DataType/valueOf (.toUpperCase data-type))
-    clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name data-type)))
-    data-type))
-
-(defn- datatype [datatype-]
+(defn datatype [datatype-]
   (condp clojure.core/= (type datatype-)
     java.lang.String (DataType/valueOf (.toUpperCase datatype-))
     clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name datatype-)))
