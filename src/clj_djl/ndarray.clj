@@ -19,13 +19,8 @@
 
 (def manager (NDManager/newBaseManager))
 
-(defn get-device [ndarray]
-  (.getDevice ndarray))
-
-(defn default-device []
-  (Device/defaultDevice))
-
 (defn shape
+  "Create a shape instance."
   ([]
    (shape []))
   ([param1 & more]
@@ -42,6 +37,13 @@
      (instance? NDArray param1) (.getShape param1))))
 
 (def new-shape shape)
+
+(defn get-device [ndarray]
+  (.getDevice ndarray))
+
+(defn default-device []
+  (Device/defaultDevice))
+
 
 (defn get-shape [ndarray]
   (.getShape ndarray))
@@ -78,47 +80,31 @@
     clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name data-type)))
     data-type))
 
-(defn- data-type [datatype]
-  (condp clojure.core/= (type datatype)
-    java.lang.String (DataType/valueOf (.toUpperCase datatype))
-    clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name datatype)))
-    datatype))
+(defn- datatype [datatype-]
+  (condp clojure.core/= (type datatype-)
+    java.lang.String (DataType/valueOf (.toUpperCase datatype-))
+    clojure.lang.Keyword (DataType/valueOf (.toUpperCase (name datatype-)))
+    datatype-))
 
 (defn zeros
-  ([manager shape]
-   (let [local-shape (cond
-                       (sequential? shape) (new-shape shape)
-                       (integer? shape) (new-shape shape)
-                       :else shape)]
-     (.zeros manager local-shape)))
-  ([manager shape data-type]
-   (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
-         local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.zeros manager local-shape local-data-type)))
-  ([manager shape data-type device]
-   (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
-         local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.zeros manager local-shape local-data-type)) device))
+  ([manager shape-]
+   (.zeros manager (shape shape-)))
+  ([manager shape- datatype-]
+   (.zeros manager (shape shape-) (datatype datatype-)))
+  ([manager shape- datatype- device]
+   (.zeros manager (shape shape-) (datatype datatype-) device)))
 
 (defn zeros-like
   [ndarray]
   (.zerosLike ndarray))
 
 (defn ones
-  ([manager shape]
-   (let [local-shape (cond
-                       (sequential? shape) (new-shape shape)
-                       (integer? shape) (new-shape shape)
-                       :else shape)]
-     (.ones manager local-shape)))
-  ([manager shape data-type]
-   (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
-         local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.ones manager local-shape local-data-type)))
-  ([manager shape data-type device]
-   (let [local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)
-         local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.ones manager local-shape local-data-type)) device))
+  ([manager shape-]
+   (.ones manager (shape shape-)))
+  ([manager shape- datatype-]
+   (.ones manager (shape shape-) (datatype datatype-)))
+  ([manager shape- datatype- device]
+   (.ones manager (shape shape-) (datatype datatype-) device)))
 
 (defn ones-like
   [ndarray]
@@ -134,20 +120,10 @@
    (.arange manager (float start) (float stop)))
   ([manager start stop step]
    (.arange manager (float start) (float stop) (float step)))
-  ([manager start stop step data-type]
-   (condp clojure.core/= (type data-type)
-     java.lang.String (.arange manager (float start) (float stop) (float step)
-                               (DataType/valueOf (.toUpperCase data-type)))
-     clojure.lang.Keyword (.arange manager (float start) (float stop) (float step)
-                                   (DataType/valueOf (.toUpperCase (name data-type))))
-     DataType (.arange manager (float start) (float stop) (float step) data-type)))
-  ([manager start stop step data-type device]
-   (condp clojure.core/= (type data-type)
-     java.lang.String (.arange manager (float start) (float stop) (float step)
-                               (DataType/valueOf (.toUpperCase data-type)))
-     clojure.lang.Keyword (.arange manager (float start) (float stop) (float step)
-                                   (DataType/valueOf (.toUpperCase (name data-type))) device)
-     DataType (.arange manager (float start) (float stop) (float step) data-type device))))
+  ([manager start stop step datatype-]
+   (.arange manager (float start) (float stop) (float step) (datatype datatype-)))
+  ([manager start stop step datatype- device]
+   (.arange manager (float start) (float stop) (float step) (datatype datatype-) device)))
 
 (defmethod arange java.lang.Long
   ([manager stop]
@@ -156,20 +132,10 @@
    (.arange manager (int start) (int stop)))
   ([manager start stop step]
    (.arange manager (int start) (int stop) (int step)))
-  ([manager start stop step data-type]
-   (condp clojure.core/= (type data-type)
-     java.lang.String (.arange manager (int start) (int stop) (int step)
-                               (DataType/valueOf (.toUpperCase data-type)))
-     clojure.lang.Keyword (.arange manager (int start) (int stop) (int step)
-                                   (DataType/valueOf (.toUpperCase (name data-type))))
-     DataType (.arange manager (int start) (int stop) (int step) data-type)))
-  ([manager start stop step data-type device]
-   (condp clojure.core/= (type data-type)
-     java.lang.String (.arange manager (int start) (int stop) (int step)
-                               (DataType/valueOf (.toUpperCase data-type)))
-     clojure.lang.Keyword (.arange manager (int start) (int stop) (int step)
-                                   (DataType/valueOf (.toUpperCase (name data-type))) device)
-     DataType (.arange manager (int start) (int stop) (int step) data-type device))))
+  ([manager start stop step datatype-]
+   (.arange manager (int start) (int stop) (int step) (datatype datatype-)))
+  ([manager start stop step datatype- device]
+   (.arange manager (int start) (int stop) (int step) (datatype datatype-) device)))
 
 (defmethod arange :default
   ([manager stop]
@@ -178,20 +144,10 @@
    (.arange manager start stop))
   ([manager start stop step]
    (.arange manager start stop step))
-  ([manager start stop step data-type]
-   (condp clojure.core/= (type data-type)
-     java.lang.String (.arange manager (int start) (int stop) (int step)
-                               (DataType/valueOf (.toUpperCase data-type)))
-     clojure.lang.Keyword (.arange manager (int start) (int stop) (int step)
-                                   (DataType/valueOf (.toUpperCase (name data-type))))
-     DataType (.arange manager (int start) (int stop) (int step) data-type)))
-  ([manager start stop step data-type device]
-   (condp clojure.core/= (type data-type)
-     java.lang.String (.arange manager (int start) (int stop) (int step)
-                               (DataType/valueOf (.toUpperCase data-type)))
-     clojure.lang.Keyword (.arange manager (int start) (int stop) (int step)
-                                   (DataType/valueOf (.toUpperCase (name data-type))) device)
-     DataType (.arange manager (int start) (int stop) (int step) data-type device))))
+  ([manager start stop step datatype-]
+   (.arange manager (int start) (int stop) (int step) (datatype datatype-)))
+  ([manager start stop step datatype- device]
+   (.arange manager (int start) (int stop) (int step) (datatype datatype-) device)))
 
 
 (defmulti create
@@ -207,17 +163,15 @@
 
 (defmethod create :nil
   ([manager data]
-   (.create manager (new-shape)))
-  ([manager data shape]
-   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.create manager local-shape))))
+   (.create manager (shape)))
+  ([manager data shape-]
+   (.create manager (shape shape-))))
 
 (defmethod create :array
   ([manager data]
    (.create manager data))
-  ([manager data shape]
-   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.create manager data local-shape))))
+  ([manager data shape-]
+   (.create manager data (shape shape-))))
 
 (defmethod create :primitive
   [manager data]
@@ -225,31 +179,29 @@
 
 (defmethod create :sequential
   ([manager data]
-   (let [param-shape (new-shape (matrix/shape data))]
-     (create manager data param-shape)))
+   (let [shape- (shape (matrix/shape data))]
+     (create manager data shape-)))
   ([manager param1 param2]
    (let [flat (clojure.core/flatten param1)
-         param-shape (if (sequential? param2)
-                       (shape param2)
-                       param2)]
+         shape- (if (sequential? param2)
+                  (shape param2)
+                  param2)]
      (condp clojure.core/= (type (first flat))
-       java.lang.Boolean (.create manager (boolean-array flat) param-shape)
-       java.lang.Byte (.create manager (byte-array flat) param-shape)
-       java.lang.Integer (.create manager (int-array flat) param-shape)
-       java.lang.Short (.create manager (int-array flat) param-shape)
-       java.lang.Long (.create manager (long-array flat) param-shape)
-       java.lang.Float (.create manager (float-array flat) param-shape)
-       java.lang.Double (.create manager (double-array flat) param-shape)))))
+       java.lang.Boolean (.create manager (boolean-array flat) shape-)
+       java.lang.Byte (.create manager (byte-array flat) shape-)
+       java.lang.Integer (.create manager (int-array flat) shape-)
+       java.lang.Short (.create manager (int-array flat) shape-)
+       java.lang.Long (.create manager (long-array flat) shape-)
+       java.lang.Float (.create manager (float-array flat) shape-)
+       java.lang.Double (.create manager (double-array flat) shape-)))))
 
 (defmethod create :shape
-  ([manager shape]
-   (.create manager shape))
-  ([manager shape data-type]
-   (let [local-data-type (convert-datatype data-type)]
-     (.create manager shape local-data-type)))
-  ([manager shape data-type device]
-   (let [local-data-type (convert-datatype data-type)]
-     (.create manager shape local-data-type device))))
+  ([manager shape-]
+   (.create manager shape-))
+  ([manager shape- datatype-]
+     (.create manager shape- (datatype datatype-)))
+  ([manager shape- datatype- device]
+   (.create manager shape- (datatype datatype-) device)))
 
 #_(defmethod create :dataset
   [manager ds]
@@ -266,7 +218,7 @@
   ([manager data1 data2 data3]
    (.create manager data1 data2 data3)))
 
-(defn create-csr [manager data indptr indices shape & device]
+(defn create-csr [manager data indptr indices shape- & device]
   (let [data (if (sequential? data)
                (condp clojure.core/= (type (first data))
                  java.lang.Byte (ByteBuffer/wrap (byte-array data))
@@ -277,13 +229,12 @@
                  (float-array data))
                data)
         indptr (if (sequential? indptr) (long-array indptr) indptr)
-        indices (if (sequential? indices) (long-array indices) indices)
-        shape (if (sequential? shape) (new-shape shape) shape)]
+        indices (if (sequential? indices) (long-array indices) indices)]
     (if (nil? device)
-      (.createCSR manager data indptr indices shape)
-      (.createCSR manager data indptr indices shape (first device)))))
+      (.createCSR manager data indptr indices (shape shape-))
+      (.createCSR manager data indptr indices (shape shape-) (first device)))))
 
-(defn create-row-sparse [manager data data-shape indices shape & device]
+(defn create-row-sparse [manager data datashape indices shape- & device]
   (let [data (if (sequential? data)
                (condp clojure.core/= (type (first data))
                  java.lang.Byte (ByteBuffer/wrap (byte-array data))
@@ -293,12 +244,10 @@
                  java.lang.Double (DoubleBuffer/wrap (double-array data))
                  (float-array data))
                data)
-        data-shape (if (sequential? data-shape) (new-shape data-shape) data-shape)
-        shape (if (sequential? shape) (new-shape shape) shape)
         indices (if (sequential? indices) (long-array indices) indices)]
     (if (nil? device)
-      (.createRowSparse manager data data-shape indices shape)
-      (.createRowSparse manager data data-shape indices shape (first device)))))
+      (.createRowSparse manager data (shape datashape) indices (shape shape-))
+      (.createRowSparse manager data (shape datashape) indices (shape shape-) (first device)))))
 
 (defn is-sparse [ndarray]
   (.isSparse ndarray))
@@ -352,46 +301,28 @@
   (.getDataType ndarray))
 
 (defn random-normal
-  ([manager shape]
-   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.randomNormal manager local-shape)))
-  ([manager loc scale shape]
-   (random-normal manager loc scale shape :float32))
-  ([manager loc scale shape data-type]
-   (let [local-shape (if (sequential? shape) (new-shape shape) shape)
-         local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)]
-     (.randomNormal manager loc scale local-shape local-data-type)))
-  ([manager loc scale shape data-type device]
-   (let [local-shape (if (sequential? shape) (new-shape shape) shape)
-         local-data-type (if (keyword? data-type) (datatype-map data-type) data-type)]
-     (.randomNormal manager loc scale local-shape local-data-type device))))
+  ([manager shape-]
+   (.randomNormal manager (shape shape-)))
+  ([manager loc scale shape-]
+   (random-normal manager loc scale (shape shape-) :float32))
+  ([manager loc scale shape- datatype-]
+   (.randomNormal manager loc scale (shape shape-) (datatype datatype-)))
+  ([manager loc scale shape- datatype- device]
+   (.randomNormal manager loc scale (shape shape-) (datatype datatype-) device)))
 
-(defmulti random-uniform
-  (fn [manager low high shape & [data-type device]]
-    (sequential? shape)))
-
-(defmethod random-uniform true
-  ([manager low high shape]
-   (.randomUniform manager low high (new-shape shape)))
-  ([manager low high shape data-type]
-   (.randomUniform manager low high (new-shape shape) data-type))
-  ([manager low high shape data-type device]
-   (.randomUniform manager low high (new-shape shape) data-type device)))
-
-(defmethod random-uniform :default
-  ([manager low high shape]
-   (.randomUniform manager low high shape))
-  ([manager low high shape data-type]
-   (.randomUniform manager low high shape data-type))
-  ([manager low high shape data-type device]
-   (.randomUniform manager low high shape data-type device)))
+(defn random-uniform
+  ([manager low high shape-]
+   (.randomUniform manager low high (shape shape-)))
+  ([manager low high shape- datatype-]
+   (.randomUniform manager low high (shape shape-) (datatype datatype-)))
+  ([manager low high shape- datatype- device]
+   (.randomUniform manager low high (shape shape-) (datatype datatype-) device)))
 
 (defn random-multinomial
   ([ndmanager n ndarray]
    (.randomMultinomial ndmanager n ndarray))
-  ([ndmanager n ndarray shape]
-   (let [local-shape (if (sequential? shape) (new-shape shape) shape)]
-     (.randomMultinomial ndmanager n ndarray local-shape))))
+  ([ndmanager n ndarray shape-]
+   (.randomMultinomial ndmanager n ndarray (shape shape-))))
 
 (defn + [array0 array1]
   (.add array0 array1))
@@ -543,11 +474,8 @@
   \"int8\" \"uint8\" \"int32\" \"int64\"
   \"float16\" \"float32\" \"float64\"
   \"boolean\" \"string\" \"unknown\""
-  [ndarray data-type copy]
-  (condp clojure.core/= (type data-type)
-    java.lang.String (.toType ndarray (DataType/valueOf (.toUpperCase data-type)) copy)
-    clojure.lang.Keyword (.toType ndarray (DataType/valueOf (.toUpperCase (name data-type))) copy)
-    DataType (.toType ndarray data-type copy)))
+  [ndarray datatype- copy]
+  (.toType ndarray (datatype datatype-) copy))
 
 (defmulti get (fn [param & more]
                 (type param)))
@@ -731,20 +659,15 @@
   (.abs ndarray))
 
 (defn full
-  ([manager shape data]
-   (let [shape (clj-djl.ndarray/shape shape)
-         data (if (float? data) (float data) data)]
-     (.full manager shape data)))
-  ([manager shape data data-type]
-   (let [shape (clj-djl.ndarray/shape shape)
-         data-type (clj-djl.ndarray/data-type data-type)
-         data (if (float? data) (float data) data)]
-     (.full manager shape data data-type)))
-  ([manager shape data data-type device]
-   (let [shape (clj-djl.ndarray/shape shape)
-         data-type (clj-djl.ndarray/data-type data-type)
-         data (if (float? data) (float data) data)]
-     (.full manager shape data data-type device))))
+  ([manager shape- data]
+   (let [data (if (float? data) (float data) data)]
+     (.full manager (shape shape-) data)))
+  ([manager shape- data datatype-]
+   (let [data (if (float? data) (float data) data)]
+     (.full manager (shape shape-) data (datatype datatype-))))
+  ([manager shape- data datatype- device]
+   (let [data (if (float? data) (float data) data)]
+     (.full manager (shape shape-) data (datatype datatype-) device))))
 
 (defn eye
   ([manager rows]
@@ -753,10 +676,10 @@
    (.eye manager rows k))
   ([manager rows cols k]
    (.eye manager rows cols k))
-  ([manager rows cols k data-type]
-   (.eye manager rows cols k (clj-djl.ndarray/data-type data-type)))
-  ([manager rows cols k data-type device]
-   (.eye manager rows cols k (clj-djl.ndarray/data-type data-type) device)))
+  ([manager rows cols k datatype-]
+   (.eye manager rows cols k (datatype datatype-)))
+  ([manager rows cols k datatype- device]
+   (.eye manager rows cols k (datatype datatype-) device)))
 
 (defn float-or-int
   [n]
