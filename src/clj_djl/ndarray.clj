@@ -449,11 +449,13 @@
        DataType/FLOAT32 (.getFloat array index)
        DataType/FLOAT64 (.getDouble array index)))))
 
-(defn to-array [ndarray]
-  (.toArray ndarray))
+(defn to-array [ndarray-or-shape]
+  (cond
+    (instance? NDArray ndarray-or-shape) (.toArray ndarray-or-shape)
+    (instance? Shape ndarray-or-shape) (.getShape ndarray-or-shape)))
 
-(defn to-vec [ndarray]
-  (vec (to-array ndarray)))
+(defn to-vec [ndarray-or-shape]
+  (vec (to-array ndarray-or-shape)))
 
 (defn to-type
   "convert ndarray to data-type, available options are:

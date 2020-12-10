@@ -1,5 +1,5 @@
 #!/bin/sh
-export version=0.1.2
+export version=0.1.3
 lein uberjar
 lein pom
 lein localrepo install target/clj-djl-$version.jar clj-djl $version
