@@ -128,8 +128,9 @@ lein test
         loss (loss/l2-loss)
 
         cfg (t/default-training-config {:loss loss
-                                        :optimizer (optimizer/sgd {:tracker (tracker/fixed learning-rate)})
-                                        :evaluator (t/accuracy) ;; log-rmse?
+                                        :optimizer (optimizer/sgd
+                                                    {:tracker (tracker/fixed learning-rate)})
+                                        :evaluator (t/accuracy)
                                         :listeners (listener/logging)})]
     (with-open [model (m/new-model {:name "mlp" :block net})
                 trainer (t/new-trainer model cfg)]
