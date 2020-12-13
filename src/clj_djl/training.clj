@@ -11,7 +11,8 @@
            [ai.djl.ndarray.types Shape]
            [ai.djl.training.dataset Batch]
            [ai.djl.ndarray NDList]
-           [ai.djl.engine Engine]))
+           [ai.djl.engine Engine]
+           [ai.djl.metric Metric Metrics]))
 
 (defn new-progress-bar []
   (ProgressBar.))
@@ -143,12 +144,23 @@
 (defn forward [trainer input]
   (.forward trainer (NDList. input)))
 
+(defn metrics []
+  (Metrics.))
+
 (defn set-metrics [trainer metrics]
   (.setMetrics trainer metrics)
   trainer)
 
-(defn get-metrics [trainer]
-  (.getMetrics trainer))
+(defn get-metrics
+  "Get metrics from trainer, put the metrics to seq of map:
+  [{\"train_progress_Accuracy\" {:timestamp 1607859588747 :value 0.68125 :unit \"count\"}}]"
+  [^ai.djl.training.Trainer trainer]
+  (let [metrics (.getMetrics trainer)
+        metric-names (.getMetricNames metrics)]
+    (into {}
+          (for [n metric-names]
+            {n (map (fn [m] {:timestamp (.getTimestamp m) :value (.getValue m) :unit (.getUnit m)})
+                    (.getMetric metrics n))}))))
 
 (defn parameter-store [manager copy]
   (ParameterStore. manager copy))

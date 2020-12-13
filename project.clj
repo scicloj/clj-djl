@@ -10,6 +10,7 @@
                  [ai.djl/api "0.8.0"]
                  [ai.djl/model-zoo "0.8.0"]
                  [ai.djl/basicdataset "0.8.0"]
+                 [clj-djl/dataframe "0.1.1"]
 
                  [ai.djl.mxnet/mxnet-engine "0.8.0"]
                  [ai.djl.mxnet/mxnet-native-auto "1.7.0-backport"]
@@ -21,6 +22,7 @@
                  ;;[ai.djl.tensorflow/tensorflow-engine "0.8.0"]
                  ;;[ai.djl.tensorflow/tensorflow-native-auto "2.3.0"]
                  ]
+  :source-paths ["src" "d2l"]
   :main ^:skip-aot clj-djl.core
   :repl-options {:init-ns clj-djl.core}
   :profiles {:codox
