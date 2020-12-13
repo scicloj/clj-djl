@@ -65,7 +65,6 @@ lein test
 
 #+RESULTS:
 : http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv [4 7]:
-:
 : | Id | MSSubClass | MSZoning | LotFrontage | SaleType | SaleCondition | SalePrice |
 : |----|------------|----------|-------------|----------|---------------|-----------|
 : |  1 |         60 |       RL |          65 |       WD |        Normal |    208500 |
