@@ -53,8 +53,12 @@ lein test
    [clj-djl.dataframe.functional :as dfn]
    [clj-d2l.core :as d2l]))
 
-(def train-data (df/->dataframe "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv"))
-(def test-data (df/->dataframe "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_test.csv"))
+(def train-ds-url "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv")
+(def test-ds-url "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_test.csv")
+
+(def train-data (df/->dataframe train-ds-url))
+(def test-data  (df/->dataframe test-ds-url))
+
 (df/select-by-index train-data (range 4) [0 1 2 3 -3 -2 -1])
 ;; http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv [4 7]:
 ;; | Id | MSSubClass | MSZoning | LotFrontage | SaleType | SaleCondition | SalePrice |
@@ -80,7 +84,8 @@ lein test
 
 (def train-features (df/head all-features n-train))
 (def test-features (df/tail all-features n-test))
-(def train-labels (-> (df/select-columns train-data ["SalePrice"])
+(def train-labels (-> train-data
+                      (df/select-columns ["SalePrice"])
                       (df/update-columns cf/numeric
                                          #(dfn// % (dfn/mean %)))))
 
@@ -103,9 +108,7 @@ lein test
                             (nn/build)))
                 (nn/set-initializer (nn/new-normal-initializer)))
 
-        loss (loss/l2-loss)
-
-        cfg (t/default-training-config {:loss loss
+        cfg (t/default-training-config {:loss (loss/l2-loss)
                                         :optimizer (optimizer/sgd
                                                     {:tracker (tracker/fixed learning-rate)})
                                         :evaluator (t/accuracy)
