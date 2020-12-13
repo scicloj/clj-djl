@@ -35,7 +35,7 @@
 (defn new-default-training-config [loss]
   (DefaultTrainingConfig. loss))
 
-(defn new-training-config new-default-training-config)
+(def new-training-config new-default-training-config)
 
 (defn opt-initializer [config initializer]
   (.optInitializer config initializer))
@@ -94,7 +94,7 @@
 (defn training-listeners []
   (into-array TrainingListener [(LoggingTrainingListener.)]))
 
-(defn new-default-training-listeners training-listeners)
+(def new-default-training-listeners training-listeners)
 
 (defn initialize
   ([trainer shapes]
