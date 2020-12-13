@@ -24,11 +24,6 @@ cd clj-djl
 lein run
 #+end_src
 
-** Examples
-
-Try examples with [[https://github.com/kimim/clj-djl-examples][clj-djl-examples]].
-
-
 * Development
 
 ** Unit testing
@@ -36,6 +31,128 @@ Try examples with [[https://github.com/kimim/clj-djl-examples][clj-djl-examples]
 #+begin_src shell
 lein test
 #+end_src
+
+* Example
+
+#+begin_src clojure :results silent :exports both
+(ns clj-d2l.house-prices
+  (:require
+   [clojure.spec.alpha :as s]
+   [clj-djl.ndarray :as nd]
+   [clj-djl.training :as t]
+   [clj-djl.training.dataset :as ds]
+   [clj-djl.training.loss :as loss]
+   [clj-djl.training.optimizer :as optimizer]
+   [clj-djl.training.tracker :as tracker]
+   [clj-djl.training.listener :as listener]
+   [clj-djl.model :as m]
+   [clj-djl.nn :as nn]
+   [clj-djl.device :as dev]
+   [clj-djl.dataframe :as df]
+   [clj-djl.dataframe.column-filters :as cf]
+   [clj-djl.dataframe.functional :as dfn]
+   [clj-d2l.core :as d2l]))
+#+end_src
+
+#+begin_src clojure :results silent :exports both
+(def train-data (df/->dataframe "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv"))
+(def test-data (df/->dataframe "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_test.csv"))
+#+end_src
+
+#+begin_src clojure :results value pp :exports both
+(df/select-by-index train-data (range 4) [0 1 2 3 -3 -2 -1])
+#+end_src
+
+#+RESULTS:
+: http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv [4 7]:
+:
+: | Id | MSSubClass | MSZoning | LotFrontage | SaleType | SaleCondition | SalePrice |
+: |----|------------|----------|-------------|----------|---------------|-----------|
+: |  1 |         60 |       RL |          65 |       WD |        Normal |    208500 |
+: |  2 |         20 |       RL |          80 |       WD |        Normal |    181500 |
+: |  3 |         60 |       RL |          68 |       WD |        Normal |    223500 |
+: |  4 |         70 |       RL |          60 |       WD |       Abnorml |    140000 |
+
+#+begin_src clojure :results silent :exports both
+(def all-features (-> train-data
+                      (df/drop-columns ["SalePrice"])
+                      (df/concat test-data)
+                      (df/drop-columns ["Id"])
+                      (df/replace-missing cf/numeric 0)
+                      (df/replace-missing cf/categorical "None")
+                      (df/update-columns cf/numeric
+                                         #(dfn// (dfn/- % (dfn/mean %))
+                                                 (dfn/standard-deviation %)))
+                      (df/categorical->one-hot cf/categorical)))
+#+end_src
+
+#+begin_src clojure :results value pp :exports both
+(def n-train ((df/shape train-data) 0))
+(def n-test ((df/shape test-data) 0))
+[n-train n-test]
+#+end_src
+
+#+RESULTS:
+: [1460 1459]
+
+#+begin_src clojure :results silent :exports bot
+(def train-features (df/head all-features n-train))
+(def test-features (df/tail all-features n-test))
+(def train-labels (-> (df/select-columns train-data ["SalePrice"])
+                      (df/update-columns cf/numeric
+                                         #(dfn// % (dfn/mean %)))))
+#+end_src
+
+#+begin_src clojure :results silent :exports both
+(def ndm (nd/new-base-manager))
+(def train-nd (df/->ndarray ndm train-features))
+(def test-nd (df/->ndarray ndm test-features))
+(def label-nd (df/->ndarray ndm train-labels))
+#+end_src
+
+#+begin_src clojure :results silent :exports both
+(defn do-train [nepochs learning-rate weight-decay batchsize output]
+  (let [train-dataset
+        (-> (ds/new-array-dataset-builder)
+            (ds/set-data (nd/to-type train-nd :float32 false))
+            (ds/opt-labels (nd/to-type label-nd :float32 false))
+            (ds/set-sampling batchsize false)
+            (ds/build))
+
+        net (-> (nn/sequential-block)
+                (nn/add (-> (nn/new-linear-builder)
+                            (nn/set-units 1)
+                            (nn/build)))
+                (nn/set-initializer (nn/new-normal-initializer)))
+
+        loss (loss/l2-loss)
+
+        cfg (t/default-training-config {:loss loss
+                                        :optimizer (optimizer/sgd {:tracker (tracker/fixed learning-rate)})
+                                        :evaluator (t/accuracy) ;; log-rmse?
+                                        :listeners (listener/logging)})]
+    (with-open [model (m/new-model {:name "mlp" :block net})
+                trainer (t/new-trainer model cfg)]
+      (t/initialize trainer (nd/shape 1 310))
+      (t/set-metrics trainer (t/metrics))
+      (t/fit trainer nepochs train-dataset)
+      (t/get-training-result trainer)
+      (let [metrics (t/get-metrics trainer)]
+        (d2l/plot-lines output
+                        ["train loss" "train-accuracy"]
+                        (range nepochs)
+                        [(map :value (metrics "train_epoch_L2Loss"))
+                         (map :value (metrics "validate_epoch_L2Loss"))
+                         (map :value (metrics "validate_epoch_Accuracy"))])))))
+
+#+end_src
+
+
+#+begin_src clojure :results silent :exports both
+(do-train 100 0.05 0 64 "figure/house-prices.svg")
+#+end_src
+
+[[https://github.com/kimim/clj-d2l/blob/master/figure/house-prices.svg]]
 
 * License
 
