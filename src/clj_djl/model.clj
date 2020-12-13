@@ -2,8 +2,10 @@
   (:refer-clojure :exclude [load])
   (:import [ai.djl Model]))
 
-(defn new-instance [name]
+(defn instance [name]
   (Model/newInstance name))
+
+(def new-instance instance)
 
 (defn set-block [model block]
   (.setBlock model block)
@@ -20,10 +22,12 @@
   (.setProperty model k v)
   model)
 
-(defn new-model [{:keys [name block data-type]}]
+(defn model [{:keys [name block data-type]}]
   (cond-> (Model/newInstance name)
     block (set-block block)
     data-type (set-datatype data-type)))
+
+(def new-model model)
 
 (defn save [model dir name]
   (if (string? dir)
@@ -31,8 +35,10 @@
     (.save model dir name))
   model)
 
-(defn new-predictor [model translator]
+(defn predictor [model translator]
   (.newPredictor model translator))
+
+(def new-predictor predictor)
 
 (defn predict [predictor img]
   (.predict predictor img))
@@ -48,8 +54,10 @@
      (.load model dir name))
    model))
 
-(defn new-trainer [model config]
+(defn trainer [model config]
   (.newTrainer model config))
+
+(def new-trainer trainer)
 
 (defn get-parameters [layer]
   (.getParameters layer))

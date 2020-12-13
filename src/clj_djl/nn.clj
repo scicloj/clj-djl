@@ -39,8 +39,10 @@
 (defn sequential-block []
   (SequentialBlock.))
 
-(defn new-linear-builder []
+(defn linear-builder []
   (Linear/builder))
+
+(def new-linear-builder linear-builder)
 
 (defn linear-block [{:keys [bias units]}]
   (cond-> (Linear/builder)
@@ -112,11 +114,13 @@
   (.setInitializer net initializer)
   net)
 
-(defn new-normal-initializer
+(defn normal-initializer
   ([]
    (NormalInitializer.))
   ([sigma]
    (NormalInitializer. sigma)))
+
+(def new-normal-initializer normal-initializer)
 
 (defn initialize [block manager datatype- & input-shapes]
   (let [datatype (nd/datatype datatype-)]

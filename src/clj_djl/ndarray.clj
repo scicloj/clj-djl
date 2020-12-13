@@ -12,12 +12,10 @@
                             get set
                             flatten]))
 
-(defn new-base-manager []
+(defn base-manager []
   (NDManager/newBaseManager))
 
-(def base-manager new-base-manager)
-
-(def manager (NDManager/newBaseManager))
+(def new-base-manager base-manager)
 
 (defn shape
   "Create a shape instance."

@@ -6,10 +6,12 @@
 
 (def zeros Initializer/ZEROS)
 
-(defn new-xavier
+(defn xavier
   ([]
    (XavierInitializer.))
   ([^clojure.lang.Keyword random-type ^clojure.lang.Keyword factor-type magnitude]
    (XavierInitializer. (XavierInitializer$RandomType/valueOf (.toUpperCase (name random-type)))
                        (XavierInitializer$FactorType/valueOf (.toUpperCase (name factor-type)))
                        magnitude)))
+
+(def new-xavier xavier)

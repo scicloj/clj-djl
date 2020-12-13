@@ -30,8 +30,7 @@
 (defn array-dataset-builder []
   (ArrayDataset$Builder.))
 
-(defn new-array-dataset-builder []
-  (ArrayDataset$Builder.))
+(def new-array-dataset-builder array-dataset-builder)
 
 (defn array-dataset [{:keys [data labels sampler batchsize shuffle droplast]}]
   (let [builder (cond-> (ArrayDataset$Builder.)

@@ -14,11 +14,10 @@
            [ai.djl.engine Engine]
            [ai.djl.metric Metric Metrics]))
 
-(defn new-progress-bar []
+(defn progress-bar []
   (ProgressBar.))
 
-(defn new-training-config [loss]
-  (DefaultTrainingConfig. loss))
+(def new-progress-bar progress-bar)
 
 (defn default-training-config [{:keys [loss devices data-manager initializer optimizer evaluator listeners]}]
   (cond-> (DefaultTrainingConfig. loss)
@@ -31,8 +30,12 @@
     initializer (.optInitializer initializer)
     optimizer (.optOptimizer optimizer)))
 
+(def training-config default-training-config)
+
 (defn new-default-training-config [loss]
   (DefaultTrainingConfig. loss))
+
+(defn new-training-config new-default-training-config)
 
 (defn opt-initializer [config initializer]
   (.optInitializer config initializer))
@@ -50,12 +53,12 @@
 (defn get-evaluators [trainer]
   (.getEvaluators trainer))
 
-(defn new-accuracy []
+(defn accuracy []
   (Accuracy.))
 
-(def accuracy new-accuracy)
+(def new-accuracy accuracy)
 
-(defn new-topk-accuracy
+(defn topk-accuracy
   ([topk]
    (TopKAccuracy. topk))
   ([index topk]
@@ -63,7 +66,7 @@
   ([name index topk]
    (TopKAccuracy. name index topk)))
 
-(def topk-accuracy new-topk-accuracy)
+(def new-topk-accuracy topk-accuracy)
 
 (defn add-accumulator
   "Adds an accumulator to the accuracy for the results of the evaluation with the
@@ -88,8 +91,10 @@
   (.addTrainingListeners config listener)
   config)
 
-(defn new-default-training-listeners []
+(defn training-listeners []
   (into-array TrainingListener [(LoggingTrainingListener.)]))
+
+(defn new-default-training-listeners training-listeners)
 
 (defn initialize
   ([trainer shapes]
@@ -102,7 +107,7 @@
    (.initialize trainer (into-array Shape (cons shape shapes)))
    trainer))
 
-(defn new-trainer
+(defn trainer
   ([model config]
    (.newTrainer model config))
   ([{:keys [model loss devices data-manager initializer optimizer]}]
@@ -112,6 +117,8 @@
                   data-manager (.optDataManager data-manager)
                   initializer (.optInitializer initializer)
                   optimizer (.optOptimizer optimizer)))))
+
+(def new-trainer trainer)
 
 (defn step [trainer]
   (.step trainer))
@@ -165,11 +172,13 @@
 (defn parameter-store [manager copy]
   (ParameterStore. manager copy))
 
-(defn new-gradient-collector
+(defn gradient-collector
   ([]
    (engine/new-gradient-collector (engine/get-instance)))
   ([trainer]
    (.newGradientCollector trainer)))
+
+(def new-gradient-collector gradient-collector)
 
 (defn fit
   ([trainer nepochs train-iter]
