@@ -13,7 +13,7 @@ clj-djl is available as a Maven artifact from Clojars.
 With Leiningen/Boot:
 
 #+begin_src clojure
-[clj-djl "0.1.2"]
+[clj-djl "0.1.4"]
 #+end_src
 
 To list all available engine:
