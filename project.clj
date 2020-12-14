@@ -10,8 +10,6 @@
                  [ai.djl/api "0.8.0"]
                  [ai.djl/model-zoo "0.8.0"]
                  [ai.djl/basicdataset "0.8.0"]
-                 [clj-djl/dataframe "0.1.1"]
-
                  [ai.djl.mxnet/mxnet-engine "0.8.0"]
                  [ai.djl.mxnet/mxnet-native-auto "1.7.0-backport"]
 
