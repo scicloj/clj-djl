@@ -96,25 +96,25 @@ lein test
 
 (defn do-train [nepochs learning-rate weight-decay batchsize output]
   (let [train-dataset
-        (-> (ds/new-array-dataset-builder)
+        (-> (ds/array-dataset-builder)
             (ds/set-data (nd/to-type train-nd :float32 false))
             (ds/opt-labels (nd/to-type label-nd :float32 false))
             (ds/set-sampling batchsize false)
             (ds/build))
 
         net (-> (nn/sequential-block)
-                (nn/add (-> (nn/new-linear-builder)
+                (nn/add (-> (nn/linear-builder)
                             (nn/set-units 1)
                             (nn/build)))
-                (nn/set-initializer (nn/new-normal-initializer)))
+                (nn/set-initializer (nn/normal-initializer)))
 
-        cfg (t/default-training-config {:loss (loss/l2-loss)
-                                        :optimizer (optimizer/sgd
-                                                    {:tracker (tracker/fixed learning-rate)})
-                                        :evaluator (t/accuracy)
-                                        :listeners (listener/logging)})]
-    (with-open [model (m/new-model {:name "mlp" :block net})
-                trainer (t/new-trainer model cfg)]
+        cfg (t/training-config {:loss (loss/l2-loss)
+                                :optimizer (optimizer/sgd
+                                            {:tracker (tracker/fixed learning-rate)})
+                                :evaluator (t/accuracy)
+                                :listeners (listener/logging)})]
+    (with-open [model (m/model {:name "mlp" :block net})
+                trainer (t/trainer model cfg)]
       (t/initialize trainer (nd/shape 1 310))
       (t/set-metrics trainer (t/metrics))
       (t/fit trainer nepochs train-dataset)
