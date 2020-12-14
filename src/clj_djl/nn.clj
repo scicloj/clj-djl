@@ -105,11 +105,6 @@
 (defn identity-block []
   (Blocks/identityBlock))
 
-(defn forward [block paramstore inputs labels-or-training? & [params]]
-  (if (nil? params)
-    (.forward block paramstore inputs labels-or-training?)
-    (.forward block paramstore inputs labels-or-training? params)))
-
 (defn set-initializer [net initializer]
   (.setInitializer net initializer)
   net)
@@ -126,6 +121,19 @@
   (let [datatype (nd/datatype datatype-)]
     (.initialize block manager datatype (into-array Shape (map #(nd/shape %) input-shapes)))
     block))
+
+(defn forward
+  ([block inputs]
+   (let [ndm (.getManager inputs)
+         _ (initialize block ndm :float32 (nd/shape inputs))
+         model (clj-djl.model/model {:name "lin-reg" :block block})
+         translator (ai.djl.translate.NoopTranslator. nil)
+         predictor (.newPredictor model translator)]
+     (nd/get (.predict predictor (nd/ndlist inputs)) 0)))
+  ([block paramstore inputs labels-or-training? & [params]]
+   (if (nil? params)
+     (.forward block paramstore inputs labels-or-training?)
+     (.forward block paramstore inputs labels-or-training? params))))
 
 (defn get-parameters [block]
   (.getParameters block))
