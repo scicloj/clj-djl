@@ -20,7 +20,7 @@
                  ;;[ai.djl.tensorflow/tensorflow-engine "0.8.0"]
                  ;;[ai.djl.tensorflow/tensorflow-native-auto "2.3.0"]
                  ]
-  :source-paths ["src" "d2l"]
+  :source-paths ["src"]
   :main ^:skip-aot clj-djl.core
   :repl-options {:init-ns clj-djl.core}
   :profiles {:codox
