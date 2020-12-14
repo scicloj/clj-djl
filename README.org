@@ -1,4 +1,4 @@
-[[https://clojars.org/clj-djl][https://img.shields.io/clojars/v/clj-djl.svg]]
+[[https://clojars.org/clj-djl][https://img.shields.io/clojars/v/clj-djl.svg]] [[https://github.com/kimim/clj-djl/actions][https://github.com/kimim/clj-djl/workflows/Clojure%20CI/badge.svg]]
 
 * clj-djl
 
