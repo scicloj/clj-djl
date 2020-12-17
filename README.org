@@ -38,17 +38,15 @@ lein test
 #+begin_src clojure :results silent :exports both
 (ns clj-d2l.house-prices
   (:require
-   [clojure.spec.alpha :as s]
    [clj-djl.ndarray :as nd]
+   [clj-djl.model :as m]
+   [clj-djl.nn :as nn]
    [clj-djl.training :as t]
    [clj-djl.training.dataset :as ds]
    [clj-djl.training.loss :as loss]
    [clj-djl.training.optimizer :as optimizer]
    [clj-djl.training.tracker :as tracker]
    [clj-djl.training.listener :as listener]
-   [clj-djl.model :as m]
-   [clj-djl.nn :as nn]
-   [clj-djl.device :as dev]
    [clj-djl.dataframe :as df]
    [clj-djl.dataframe.column-filters :as cf]
    [clj-djl.dataframe.functional :as dfn]))
