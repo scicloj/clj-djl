@@ -48,6 +48,7 @@ lein test
    [clj-djl.training.listener :as listener]
    [clj-djl.model :as m]
    [clj-djl.nn :as nn]
+   [clj-djl.device :as dev]
    [clj-djl.dataframe :as df]
    [clj-djl.dataframe.column-filters :as cf]
    [clj-djl.dataframe.functional :as dfn]))
@@ -99,9 +100,8 @@ lein test
                            :labels (nd/to-type label-nd :float32 false)
                            :batchsize batchsize
                            :shuffle false})
-        net (nn/sequential
-             {:blocks (nn/linear {:units 1})
-              :initializer (nn/normal-initializer)})
+        net (nn/sequential {:blocks (nn/linear {:units 1})
+                            :initializer (nn/normal-initializer)})
         cfg (t/training-config {:loss (loss/l2-loss)
                                 :optimizer (optimizer/sgd
                                             {:tracker (tracker/fixed learning-rate)})
