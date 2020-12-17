@@ -48,11 +48,9 @@ lein test
    [clj-djl.training.listener :as listener]
    [clj-djl.model :as m]
    [clj-djl.nn :as nn]
-   [clj-djl.device :as dev]
    [clj-djl.dataframe :as df]
    [clj-djl.dataframe.column-filters :as cf]
-   [clj-djl.dataframe.functional :as dfn]
-   [clj-d2l.core :as d2l]))
+   [clj-djl.dataframe.functional :as dfn]))
 
 (def train-ds-url "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv")
 (def test-ds-url "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_test.csv")
@@ -95,20 +93,15 @@ lein test
 (def test-nd (df/->ndarray ndm test-features))
 (def label-nd (df/->ndarray ndm train-labels))
 
-(defn do-train [nepochs learning-rate weight-decay batchsize output]
+(defn do-train [nepochs learning-rate weight-decay batchsize]
   (let [train-dataset
-        (-> (ds/array-dataset-builder)
-            (ds/set-data (nd/to-type train-nd :float32 false))
-            (ds/opt-labels (nd/to-type label-nd :float32 false))
-            (ds/set-sampling batchsize false)
-            (ds/build))
-
-        net (-> (nn/sequential-block)
-                (nn/add (-> (nn/linear-builder)
-                            (nn/set-units 1)
-                            (nn/build)))
-                (nn/set-initializer (nn/normal-initializer)))
-
+        (ds/array-dataset {:data (nd/to-type train-nd :float32 false)
+                           :labels (nd/to-type label-nd :float32 false)
+                           :batchsize batchsize
+                           :shuffle false})
+        net (nn/sequential
+             {:blocks (nn/linear {:units 1})
+              :initializer (nn/normal-initializer)})
         cfg (t/training-config {:loss (loss/l2-loss)
                                 :optimizer (optimizer/sgd
                                             {:tracker (tracker/fixed learning-rate)})
@@ -119,16 +112,10 @@ lein test
       (t/initialize trainer (nd/shape 1 310))
       (t/set-metrics trainer (t/metrics))
       (t/fit trainer nepochs train-dataset)
-      (t/get-training-result trainer)
-      (let [metrics (t/get-metrics trainer)]
-        (d2l/plot-lines output
-                        ["train loss" "train-accuracy"]
-                        (range nepochs)
-                        [(map :value (metrics "train_epoch_L2Loss"))
-                         (map :value (metrics "validate_epoch_L2Loss"))
-                         (map :value (metrics "validate_epoch_Accuracy"))])))))
+      (t/get-result trainer))))
 
-(do-train 100 0.05 0 64 "figure/house-prices.svg")
+(do-train 5 0.05 0 64)
+;; => {:epochs 5, :train-accuracy 0.8821918, :validate-accuracy ##NaN, :train-loss 0.017300649, :validate-loss ##NaN}
 #+end_src
 
 [[https://github.com/kimim/clj-d2l/blob/master/figure/house-prices.svg]]

@@ -36,28 +36,30 @@
   [data]
   (Activation/softPlus data))
 
-(defn sequential-block []
-  (SequentialBlock.))
-
 (defn linear-builder []
   (Linear/builder))
 
 (def new-linear-builder linear-builder)
 
-(defn linear-block [{:keys [bias units]}]
+(defn linear [{:keys [bias units]}]
   (cond-> (Linear/builder)
     bias (.optBias bias)
     units (.setUnits units)
     true (.build)))
 
-(defn batchnorm-block [& {:keys [axis center epsilon momentum scale]}]
-  (cond-> (BatchNorm/builder)
-    axis (.optAxis axis)
-    center (.optCenter center)
-    epsilon (.optEspilon epsilon)
-    momentum (.optMomentum momentum)
-    scale (.optScale scale)
-    true (.build)))
+(def linear-block linear)
+
+(defn batchnorm-block
+  ([]
+   (.build (BatchNorm/builder))    )
+  ([{:keys [axis center epsilon momentum scale]}]
+   (cond-> (BatchNorm/builder)
+     axis (.optAxis axis)
+     center (.optCenter center)
+     epsilon (.optEspilon epsilon)
+     momentum (.optMomentum momentum)
+     scale (.optScale scale)
+     true (.build))))
 
 
 (defn cov2d-block [{:keys [kernel-shape filters bias dilation groups padding stride]}]
@@ -145,3 +147,15 @@
   (cond-> (Dropout/builder)
     rate (.optRate rate)
     :always (.build)))
+
+(defn sequential
+  ([]
+   (SequentialBlock.))
+  ([{:keys [blocks initializer]}]
+   (cond-> (SequentialBlock.)
+     blocks (.addAll (into-array ai.djl.nn.Block (if (instance? ai.djl.nn.Block blocks)
+                                                   [blocks]
+                                                   blocks)))
+     initializer (set-initializer initializer))))
+
+(def sequential-block sequential)
