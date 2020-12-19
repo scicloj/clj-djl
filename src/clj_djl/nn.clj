@@ -1,6 +1,7 @@
 (ns clj-djl.nn
   (:require
    [clj-djl.ndarray :as nd]
+   [clj-djl.model :as m]
    [clj-djl.utils :as utils])
   (:import
    [ai.djl.nn Activation SequentialBlock]
@@ -128,7 +129,7 @@
   ([block inputs]
    (let [ndm (.getManager inputs)
          _ (initialize block ndm :float32 (nd/shape inputs))
-         model (clj-djl.model/model {:name "lin-reg" :block block})
+         model (m/model {:name "lin-reg" :block block})
          translator (ai.djl.translate.NoopTranslator. nil)
          predictor (.newPredictor model translator)]
      (nd/get (.predict predictor (nd/ndlist inputs)) 0)))

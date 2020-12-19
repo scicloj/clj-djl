@@ -19,7 +19,7 @@
 
 (def new-progress-bar progress-bar)
 
-(defn default-training-config [{:keys [loss devices data-manager initializer optimizer evaluator listeners]}]
+(defn config [{:keys [loss devices data-manager initializer optimizer evaluator listeners]}]
   (cond-> (DefaultTrainingConfig. loss)
     listeners (.addTrainingListeners (if (sequential? listeners)
                                        (into-array TrainingListener listeners)
@@ -30,7 +30,8 @@
     initializer (.optInitializer initializer)
     optimizer (.optOptimizer optimizer)))
 
-(def training-config default-training-config)
+(def training-config config)
+(def default-training-config config)
 
 (defn new-default-training-config [loss]
   (DefaultTrainingConfig. loss))
