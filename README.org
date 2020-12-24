@@ -17,6 +17,10 @@ With Leiningen/Boot:
 [clj-djl "0.1.4"]
 #+end_src
 
+Latest version please refer to:
+
+[[https://clojars.org/clj-djl][https://clojars.org/clj-djl/latest-version.svg]]
+
 To list all available engine:
 
 #+begin_src shell
