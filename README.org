@@ -14,13 +14,13 @@ clj-djl is available as a Maven artifact from Clojars.
 With Leiningen/Boot:
 
 #+begin_src clojure
-[clj-djl "0.1.4"]
+[clj-djl "0.1.5"]
 #+end_src
 
 With Clojure CLI/deps.edn:
 
 #+begin_src clojure
-clj-djl/clj-djl {:mvn/version "0.1.4"}
+clj-djl/clj-djl {:mvn/version "0.1.5"}
 #+end_src
 
 Latest version please refer to:
@@ -44,7 +44,15 @@ lein test
 #+end_src
 
 * Example
+~deps.edn~:
 
+#+begin_src clojure
+{:deps
+ {clj-djl/clj-djl       {:mvn/version "0.1.5"}
+  clj-djl/dataframe     {:mvn/version "0.1.2"}}}
+#+end_src
+
+~house_prices.clj~:
 #+begin_src clojure :results silent :exports both
 (ns clj-d2l.house-prices
   (:require
@@ -61,20 +69,22 @@ lein test
    [clj-djl.dataframe.column-filters :as cf]
    [clj-djl.dataframe.functional :as dfn]))
 
-(def train-ds-url "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv")
-(def test-ds-url "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_test.csv")
+(def train-ds-url
+  "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv")
+(def test-ds-url
+  "http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_test.csv")
 
 (def train-data (df/->dataframe train-ds-url))
 (def test-data  (df/->dataframe test-ds-url))
 
-(df/select-by-index train-data (range 4) [0 1 2 3 -3 -2 -1])
-;; http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv [4 7]:
-;; | Id | MSSubClass | MSZoning | LotFrontage | SaleType | SaleCondition | SalePrice |
-;; |----|------------|----------|-------------|----------|---------------|-----------|
-;; |  1 |         60 |       RL |          65 |       WD |        Normal |    208500 |
-;; |  2 |         20 |       RL |          80 |       WD |        Normal |    181500 |
-;; |  3 |         60 |       RL |          68 |       WD |        Normal |    223500 |
-;; |  4 |         70 |       RL |          60 |       WD |       Abnorml |    140000 |
+(df/select-by-index train-data (range 4) [0 1 2 -2 -1])
+;; http://d2l-data.s3-accelerate.amazonaws.com/kaggle_house_pred_train.csv [4 5]:
+;; | Id | MSSubClass | MSZoning | SaleCondition | SalePrice |
+;; |----|------------|----------|---------------|-----------|
+;; |  1 |         60 |       RL |        Normal |    208500 |
+;; |  2 |         20 |       RL |        Normal |    181500 |
+;; |  3 |         60 |       RL |        Normal |    223500 |
+;; |  4 |         70 |       RL |       Abnorml |    140000 |
 
 (def all-features (-> train-data
                       (df/drop-columns ["SalePrice"])
@@ -87,8 +97,8 @@ lein test
                                                  (dfn/standard-deviation %)))
                       (df/categorical->one-hot cf/categorical)))
 
-(def n-train ((df/shape train-data) 0))
-(def n-test ((df/shape test-data) 0))
+(def n-train (df/row-count train-data))
+(def n-test  (df/row-count test-data))
 
 (def train-features (df/head all-features n-train))
 (def test-features (df/tail all-features n-test))
