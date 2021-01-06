@@ -11,7 +11,7 @@
   (:import [ai.djl.training.dataset BatchSampler SequenceSampler RandomSampler]))
 
 (def config (t/default-training-config {:loss (l/l2-loss)
-                                        :initializer i/ones}))
+                                        :initializer (i/ones)}))
 
 (deftest sequence-sampler-test
   (with-open [model (m/new-model {:name "model"

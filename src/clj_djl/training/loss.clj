@@ -18,6 +18,7 @@
   ([name weight]
    (Loss/l2Loss name weight)))
 
+
 (def l2 l2-loss)
 
 (defn hinge-loss

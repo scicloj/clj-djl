@@ -2,9 +2,16 @@
   (:import [ai.djl.training.initializer Initializer
             XavierInitializer XavierInitializer$RandomType XavierInitializer$FactorType]))
 
-(def ones Initializer/ONES)
 
-(def zeros Initializer/ZEROS)
+(defn ones
+  "return ONES intializer"
+  []
+  Initializer/ONES)
+
+(defn zeros
+  "return ZEROS initializer"
+  []
+  Initializer/ZEROS)
 
 (defn xavier
   ([]
