@@ -133,7 +133,11 @@ lein test
       (t/get-result trainer))))
 
 (do-train 5 0.05 0 64)
-;; => {:epochs 5, :train-accuracy 0.8821918, :validate-accuracy ##NaN, :train-loss 0.017300649, :validate-loss ##NaN}
+;; => {:epochs 5,
+;;     :train-accuracy 0.87876713,
+;;     :train-loss 0.017618015,
+;;     :validate-accuracy ##NaN,
+;;     :validate-loss ##NaN}
 #+end_src
 
 [[https://github.com/kimim/clj-d2l/blob/master/figure/house-prices.svg]]
