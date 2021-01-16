@@ -435,6 +435,7 @@
 
 
 (defn get-element
+  "get the wrap value of NDArray"
   ([array]
    (get-element array []))
   ([array index]
