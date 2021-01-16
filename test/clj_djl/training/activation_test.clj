@@ -73,4 +73,16 @@
             expect (nd/create manager (float-array [-1 0 2]))]
         (is (= expect (nn/leaky-relu data alpha)))
         (is (= expect (first (nn/leaky-relu (nd/ndlist data) alpha))))
+        (is (= expect (first (t/forward trainer (nd/ndlist data))))))))
+
+  (let [alpha 0.5]
+    (with-open [trainer (t/trainer (m/model  {:name "leaky relu"
+                                              :block (nn/leaky-relu-block alpha)})
+                                   (t/config {:loss (loss/l2)
+                                              :initializer (init/ones)}))
+                manager (t/get-manager trainer)]
+      (let [data (nd/create manager (float-array [-10 0 2]))
+            expect (nd/create manager (float-array [-5 0 2]))]
+        (is (= expect (nn/leaky-relu data alpha)))
+        (is (= expect (first (nn/leaky-relu (nd/ndlist data) alpha))))
         (is (= expect (first (t/forward trainer (nd/ndlist data)))))))))
