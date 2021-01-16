@@ -37,6 +37,16 @@
   [data]
   (Activation/softPlus data))
 
+(defn leaky-relu-block
+  "Create a LamdaBlock with LeakyReLU as forward function:
+  LeakyRelu = (if (>= x 0) x (* neg_slope x))"
+  [alpha]
+  (Activation/leakyReluBlock alpha))
+
+(defn leaky-relu
+  [data alpha]
+  (Activation/leakyRelu data (float alpha)))
+
 (defn linear-builder []
   (Linear/builder))
 
