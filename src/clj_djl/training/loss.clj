@@ -3,6 +3,10 @@
            [ai.djl.training.loss Loss]))
 
 (defn l1
+  "Least absolute deviations loss function minimizes the absolute differences
+  between the estimated values and the existing target values.
+
+  L1 = \sum |pred_i - label_i|"
   ([]
    (Loss/l1Loss))
   ([name]
@@ -13,6 +17,10 @@
 (def l1-loss l1)
 
 (defn l2
+  "Least square errors loss function minimizes the squared differences between the
+  estimated and existing target values.
+
+  L2 = \frac{1}{2} * \sum |label_i - pred_i|^2"
   ([]
    (Loss/l2Loss))
   ([name]
@@ -24,6 +32,8 @@
 (def l2-loss l2)
 
 (defn hinge
+  "The hinge loss is used for maximum-margin classification.
+  L = \sum {max(0, 1-y_i \mul \hat{y_i})}"
   ([]
    (Loss/hingeLoss))
   ([name]
