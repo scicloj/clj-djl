@@ -44,7 +44,7 @@ lein test
 #+end_src
 
 * Example
-~deps.edn~:
+~deps.edn~ (clj cli)
 
 #+begin_src clojure
 {:deps
@@ -52,7 +52,17 @@ lein test
   clj-djl/dataframe     {:mvn/version "0.1.2"}}}
 #+end_src
 
+~project.clj~ (for leiningen)
+
+#+begin_src clojure
+(defproject clj-d2l/house-prices "0.0.1"
+  :dependencies [[clj-djl "0.1.5"]
+                 [clj-djl/dataframe "0.1.2"]]
+  :source-paths ["src"])
+#+end_src
+
 ~house_prices.clj~:
+
 #+begin_src clojure :results silent :exports both
 (ns clj-d2l.house-prices
   (:require
