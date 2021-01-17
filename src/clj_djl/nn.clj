@@ -39,13 +39,84 @@
 
 (defn leaky-relu-block
   "Create a LamdaBlock with LeakyReLU as forward function:
+
   LeakyRelu = (if (>= x 0) x (* neg_slope x))"
   [alpha]
-  (Activation/leakyReluBlock alpha))
+  (Activation/leakyReluBlock (float alpha)))
 
 (defn leaky-relu
   [data alpha]
   (Activation/leakyRelu data (float alpha)))
+
+(defn prelu-block
+  "Creates a LambdaBlock that applies the PreLU activation function in its forward
+  function, the neg_slope is learnt during training"
+  []
+  (Activation/preluBlock))
+
+(defn elu-block
+  "Creates a LambdaBlock that applies the ELU activation function in its forward
+  function
+
+  ELU <- (if (> x 0) x (* alpha (- (pow e x) 1)))"
+  [alpha]
+  (Activation/eluBlock (float alpha)))
+
+(defn elu
+  "Applies ELU(Exponential Linear Unit) activation on the input NDArray or
+  NDList"
+  [data alpha]
+  (Activation/elu data (float alpha)))
+
+(defn gelu-block
+  "Creates a LambdaBlock that applies the GELU activation function in its forward
+  function"
+  []
+  (Activation/geluBlock))
+
+(defn gelu
+  "Applies GELU(Gausian Error Linear Unit) activation on the input NDArray or
+  NDList"
+  [data]
+  (Activation/gelu data))
+
+(defn selu-block
+  "Creates a LambdaBlock that applies the SELU activation function in its forward
+  function
+
+  SELU <- (* lambda (if (> x 0) x (* alpha (- (pow e x) 1)))), where lamda is
+  1.0507009873554804934193349852946 and alpha is
+  1.6732632423543772848170429916717"
+  []
+  (Activation/seluBlock))
+
+(defn selu
+  "Applies SELU(Scaled Exponential Linear Unit) activation on the input NDArray or
+  NDList"
+  [data]
+  (Activation/selu data))
+
+(defn swish-block
+  "Creates a LambdaBlock that applies the Swish activation function in its forward
+  function"
+  [beta]
+  (Activation/swishBlock (float beta)))
+
+(defn swish
+  "Applies Swish activation on the input NDArray or NDList"
+  [data beta]
+  (Activation/swish data (float beta)))
+
+(defn mish-block
+  "Creates a LambdaBlock that applies the Mish activation function in its forward
+  function"
+  []
+  (Activation/mishBlock))
+
+(defn mish
+  "Applies Mish activation on the input NDArray or NDList"
+  [data]
+  (Activation/mish data))
 
 (defn linear-builder []
   (Linear/builder))
