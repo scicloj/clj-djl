@@ -189,7 +189,7 @@
                         0.001 0.001 true)))))
 
 (deftest prelu-test
-  (with-open [model (m/model  {:name "mish"
+  (with-open [model (m/model  {:name "prelu"
                                :block (nn/prelu-block)})
               trainer (t/trainer model
                                  (t/config {:loss (loss/l2)

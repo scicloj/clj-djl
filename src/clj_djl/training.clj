@@ -6,7 +6,7 @@
            [ai.djl.training DefaultTrainingConfig TrainingConfig ParameterStore]
            [ai.djl.training.loss Loss]
            [ai.djl.training EasyTrain]
-           [ai.djl.training.evaluator Accuracy TopKAccuracy]
+           [ai.djl.training.evaluator Accuracy TopKAccuracy BinaryAccuracy]
            [ai.djl.training.listener TrainingListener LoggingTrainingListener]
            [ai.djl.ndarray.types Shape]
            [ai.djl.training.dataset Batch]
@@ -68,6 +68,18 @@
    (TopKAccuracy. name index topk)))
 
 (def new-topk-accuracy topk-accuracy)
+
+(defn binary-accuracy
+  ([]
+   (BinaryAccuracy.))
+  ([threshold]
+   (BinaryAccuracy. threshold))
+  ([acc-name threshold index]
+   (BinaryAccuracy. acc-name threshold index))
+  ([acc-name threshold index axis]
+   (BinaryAccuracy. acc-name threshold index axis)))
+
+(def new-binary-accuracy binary-accuracy)
 
 (defn add-accumulator
   "Adds an accumulator to the accuracy for the results of the evaluation with the
