@@ -8,9 +8,9 @@
     (let [predictions (nd/create ndm [0.3, 0.7, 0., 1., 0.4, 0.6] [3 2])
           labels (nd/create ndm [0 1 1] [3])
           acc (-> (t/new-accuracy)
-                  (t/add-accumulator "")
-                  (t/update-accumulator "" (nd/ndlist labels) (nd/ndlist predictions)))
-          accuracy (t/get-accumulator acc "")
+                  (t/add-accumulator "accuracy")
+                  (t/update-accumulator "accuracy" (nd/ndlist labels) (nd/ndlist predictions)))
+          accuracy (t/get-accumulator acc "accuracy")
           expected (/ 2. 3.)]
       ;; equal within tolerance 0.00001, maybe there are better solution
       (is (< (Math/abs (- accuracy expected)) 0.00001)))))
