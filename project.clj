@@ -3,7 +3,7 @@
   :url "http://github.com/kimim/clj-djl"
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
-  :dependencies [[org.clojure/clojure "1.10.1"]
+  :dependencies [[org.clojure/clojure "1.10.2"]
 
                  [org.slf4j/slf4j-simple "1.7.26"]
 
