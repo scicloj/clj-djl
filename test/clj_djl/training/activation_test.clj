@@ -1,5 +1,5 @@
 (ns clj-djl.training.activation-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [clj-djl.ndarray :as nd]
             [clj-djl.model :as m]
             [clj-djl.training :as t]
@@ -10,38 +10,38 @@
 (def config (t/config {:loss (loss/l2) :initializer (init/ones)}))
 
 (deftest relu-test
-  (try (let [model (m/new-instance "model")]
-         (m/set-block model (nn/relu-block))
-         (try (let [trainer (t/new-trainer model config)]
-                (t/initialize trainer [(nd/new-shape [3])])
-                (let [manager (t/get-manager trainer)
-                      data (nd/create manager (float-array [-1 0 2]))
-                      expected (nd/create manager (float-array [0 0 2]))
-                      result (nd/singleton-or-throw (t/forward trainer [data]))]
-                  (is (= expected (nn/relu data)))
-                  (is (= expected result))))))))
+  (with-open [model (m/new-instance "model")]
+    (m/set-block model (nn/relu-block))
+    (with-open [trainer (t/new-trainer model config)]
+      (t/initialize trainer [(nd/new-shape [3])])
+      (let [manager (t/get-manager trainer)
+            data (nd/create manager (float-array [-1 0 2]))
+            expected (nd/create manager (float-array [0 0 2]))
+            result (nd/singleton-or-throw (t/forward trainer [data]))]
+        (is (= expected (nn/relu data)))
+        (is (= expected result))))))
 
 (deftest sigmoid-test
-  (try (let [model (m/new-instance "model")]
-         (m/set-block model (nn/sigmoid-block))
-         (try (let [trainer (t/trainer model config)]
-                (let [manager (t/get-manager trainer)
-                      data (nd/create manager (float-array [0]))
-                      expected (nd/create manager (float-array [0.5]))
-                      result (first (t/forward trainer [data]))]
-                  (is (= expected (nn/sigmoid data)))
-                  (is (= expected result))))))))
+  (with-open [model (m/new-instance "model")]
+    (m/set-block model (nn/sigmoid-block))
+    (with-open [trainer (t/trainer model config)]
+      (let [manager (t/get-manager trainer)
+            data (nd/create manager (float-array [0]))
+            expected (nd/create manager (float-array [0.5]))
+            result (first (t/forward trainer [data]))]
+        (is (= expected (nn/sigmoid data)))
+        (is (= expected result))))))
 
 (deftest tanh-test
-  (try (let [model (m/new-instance "model")]
-         (m/set-block model (nn/tanh-block))
-         (let [trainer (t/trainer model config)]
-           (let [manager (t/get-manager trainer)
-                 data (nd/create manager (float-array [0]))
-                 expected (nd/create manager (float-array [0]))
-                 result (first (t/forward trainer [data]))]
-             (is (= expected (nn/tanh data)))
-             (is (= expected result)))))))
+  (with-open [model (m/new-instance "model")]
+    (m/set-block model (nn/tanh-block))
+    (with-open [trainer (t/trainer model config)]
+      (let [manager (t/get-manager trainer)
+            data (nd/create manager (float-array [0]))
+            expected (nd/create manager (float-array [0]))
+            result (first (t/forward trainer [data]))]
+        (is (= expected (nn/tanh data)))
+        (is (= expected result))))))
 
 (deftest softrelu-test
   (with-open [model (m/model {:name "model"

@@ -1,5 +1,5 @@
 (ns clj-djl.training.model-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [clj-djl.nn :as nn]
             [clj-djl.model :as m]
             [clj-djl.training.initializer :as initializer]))

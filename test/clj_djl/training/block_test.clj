@@ -1,12 +1,11 @@
 (ns clj-djl.training.block-test
-  (:require [clojure.test :refer :all]
+  (:require [clojure.test :refer [deftest is]]
             [clj-djl.ndarray :as nd]
             [clj-djl.training :as t]
             [clj-djl.model :as m]
             [clj-djl.nn :as nn]
             [clj-djl.training.loss :as loss]
-            [clj-djl.training.initializer :as init]
-            [clj-djl.utils :refer :all])
+            [clj-djl.training.initializer :as init])
   (:import (ai.djl.training.initializer Initializer)))
 
 (deftest flatten-block
