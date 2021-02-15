@@ -6,8 +6,7 @@
    [clj-djl.model :as m]
    [clj-djl.nn :as nn]
    [clj-djl.training.loss :as loss]
-   [clj-djl.training.initializer :as init]
-   [clj-djl.utils :refer :all]))
+   [clj-djl.training.initializer :as init]))
 
 (deftest linear-test
   (let [outsize 3
