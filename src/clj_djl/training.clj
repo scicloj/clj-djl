@@ -205,10 +205,6 @@
 (defn validate-batch [trainer batch]
   (EasyTrain/validateBatch trainer batch))
 
-
-(defn gradient-collector []
-  (-> (Engine/getInstance) (.newGradientCollector)))
-
 (defn attach-gradient
   "Attaches a gradient NDArray to this NDArray and marks it so
   GradientCollector.backward(NDArray) can compute the gradient with respect to it."
