@@ -31,3 +31,12 @@
           result (nd/+! lhs 2)
           expected (nd/create manager (float-array [3 4 5 6]))]
       (is (= result expected lhs )))))
+
+(deftest add-ndarray-test
+  (with-open [ndm (nd/new-base-manager)]
+    (let [addend (nd/create ndm (float-array [1 2 3 4]))
+          addendum (nd/create ndm (float-array [2 3 4 5]))
+          result (nd/+ addend addendum)
+          expected (nd/create ndm (float-array [3 5 7 9]))]
+      (is (not= result addend))
+      (is (= result expected)))))
