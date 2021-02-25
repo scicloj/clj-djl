@@ -39,4 +39,26 @@
           result (nd/+ addend addendum)
           expected (nd/create ndm (float-array [3 5 7 9]))]
       (is (not= result addend))
-      (is (= result expected)))))
+      (is (= result expected)))
+    (let [addend (nd/create ndm (float-array [1 2 3 4]))
+          addendum (nd/create ndm (float-array [2 3 4 5]))
+          result (nd/+! addend addendum)
+          expected (nd/create ndm (float-array [3 5 7 9]))]
+      (is (= result expected addend)))
+    (let [to-add-all [(nd/create ndm (float-array [1 2 3 4]) [2 2])
+                      (nd/create ndm (float-array [4 3 2 1]) [2 2])
+                      (nd/create ndm (float-array [2 2 2 2]) [2 2])]
+          to-add-all-array (into-array ai.djl.ndarray.NDArray to-add-all)
+          expected (nd/create ndm (float-array [7 7 7 7]) [2 2])
+          add-all (ai.djl.ndarray.NDArrays/add
+                   to-add-all-array)]
+      (is (= expected add-all))
+      (is (not= expected (aget to-add-all-array 0))))
+    (let [to-add-all [(nd/create ndm (float-array [1 2 3 4]) [2 2])
+                      (nd/create ndm (float-array [4 3 2 1]) [2 2])
+                      (nd/create ndm (float-array [2 2 2 2]) [2 2])]
+          to-add-all-array (into-array ai.djl.ndarray.NDArray to-add-all)
+          expected (nd/create ndm (float-array [7 7 7 7]) [2 2])
+          add-all (ai.djl.ndarray.NDArrays/addi
+                   to-add-all-array)]
+      (is (= expected add-all (aget to-add-all-array 0))))))
