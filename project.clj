@@ -5,7 +5,7 @@
             :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.10.2"]
 
-                 [org.slf4j/slf4j-simple "1.7.26"]
+                 [org.slf4j/slf4j-api "1.7.30"]
 
                  [ai.djl/api "0.9.0"]
                  [ai.djl/model-zoo "0.9.0"]
