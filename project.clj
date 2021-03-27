@@ -4,9 +4,7 @@
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.10.2"]
-
                  [org.slf4j/slf4j-api "1.7.30"]
-
                  [ai.djl/api "0.9.0"]
                  [ai.djl/model-zoo "0.9.0"]
                  [ai.djl/basicdataset "0.9.0"]
@@ -14,6 +12,7 @@
                  [ai.djl.mxnet/mxnet-native-auto "1.7.0-backport"]
 
                  [net.mikera/core.matrix "0.62.0"]
+                 [scicloj/metamorph.ml "0.3.0-alpha3"]
                  ;;[ai.djl.pytorch/pytorch-engine "0.8.0"]
                  ;;[ai.djl.pytorch/pytorch-native-auto "1.6.0"]
 
