@@ -16,10 +16,7 @@
 (defn- train
   [feature-ds label-ds options]
   (let [ndm (nd/new-base-manager)
-        _ (def feature-ds feature-ds)
         train-nd (->ndarray ndm feature-ds)
-        _ (def ndm ndm)
-        _ (def label-ds label-ds)
         label-nd (->ndarray ndm label-ds)
         train-dataset
         (ds/array-dataset {:data (nd/to-type train-nd :float32 false)
@@ -38,9 +35,7 @@
       (t/set-metrics trainer (t/metrics))
       (t/fit trainer (:nepoch options) train-dataset)
       (m/save model temp-dir temp-file-name)
-      (merge
-       options
-       {
+      (merge options {
         :train-result (t/get-result trainer)
         :model-file (.getAbsolutePath  temp-file)
         :model-spec (:model-spec options)}
@@ -60,8 +55,7 @@
             (->
              (.predict predictor (nd/ndlist (nd/to-type test-nd :float32 false)))
              (nd/get 0)
-             nd/to-vec
-             )))]
+             nd/to-vec)))]
     (dataset/->dataset
      {(first target-columns)
       prediction})))
