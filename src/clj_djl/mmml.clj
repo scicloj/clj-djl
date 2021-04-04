@@ -43,7 +43,8 @@
 
 (defn- predict
   [feature-ds thawed-model {:keys [target-columns target-categorical-maps options model-data] :as model}]
-  (let [translator (ai.djl.translate.NoopTranslator. nil)
+  (let [ndm (nd/new-base-manager)
+        translator (ai.djl.translate.NoopTranslator. nil)
         model-spec (:model-spec options)
         prediction
         (with-open [model (m/model {:name (:name model-spec) :block ((:block-fn model-spec))} )]
