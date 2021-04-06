@@ -43,7 +43,8 @@
 
 (defn- predict
   [feature-ds thawed-model {:keys [target-columns target-categorical-maps options model-data] :as model}]
-  (let [translator (ai.djl.translate.NoopTranslator. nil)
+  (let [ndm (nd/new-base-manager)
+        translator (ai.djl.translate.NoopTranslator. nil)
         model-spec (:model-spec options)
         prediction
         (with-open [model (m/model {:name (:name model-spec) :block ((:block-fn model-spec))} )]
@@ -63,5 +64,14 @@
 (ml/define-model! :clj-djl/djl
   train
   predict
-  {}
+  {:documentation {:user-guide "https://github.com/awslabs/djl/blob/master/docs/README.md#documentation"
+                   :javadoc "https://javadoc.io/doc/ai.djl/api/latest/index.html"
+                   }
+   :options [{:name "batchsize" :type :int16 :default nil}
+                             {:name "model-spec" :type :model-spec :default nil}
+                             {:name "name" :type :string :default nil}
+                             {:name "initial-shape" :type :shape :default nil}
+                             {:name "nepoch" :type :int16 :default nil}
+                             ]
+   }
   )
