@@ -7,11 +7,13 @@
             [clj-djl.device :as d]
             [clj-djl.ndarray :as nd]
             [clj-djl.training.dataset :as ds]
-            [clj-djl.nn :as nn])
+            [clj-djl.nn :as nn]
+            [clj-djl.nn.parameter :as param])
   (:import [ai.djl.training.dataset BatchSampler SequenceSampler RandomSampler]))
 
 (def config (t/default-training-config {:loss (l/l2-loss)
-                                        :initializer (i/ones)}))
+                                        :initializer (i/ones)
+                                        :parameter param/weight}))
 
 (deftest sequence-sampler-test
   (with-open [model (m/new-model {:name "model"

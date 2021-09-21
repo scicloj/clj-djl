@@ -5,9 +5,10 @@
             [clj-djl.training :as t]
             [clj-djl.training.loss :as loss]
             [clj-djl.training.initializer :as init]
-            [clj-djl.nn :as nn]))
+            [clj-djl.nn :as nn]
+            [clj-djl.nn.parameter :as param]))
 
-(def config (t/config {:loss (loss/l2) :initializer (init/ones)}))
+(def config (t/config {:loss (loss/l2) :initializer (init/ones) :parameter param/weight}))
 
 (deftest relu-test
   (with-open [model (m/new-instance "model")]
@@ -80,7 +81,8 @@
                                  :block (nn/leaky-relu-block alpha)})
                 trainer (t/trainer model
                                    (t/config {:loss (loss/l2)
-                                              :initializer (init/ones)}))
+                                              :initializer (init/ones)
+                                              :parameter param/weight}))
                 manager (t/get-manager trainer)]
       (let [data (nd/create manager (float-array [-10 0 2]))
             expect (nd/create manager (float-array [-5 0 2]))]
@@ -94,7 +96,8 @@
                                  :block (nn/elu-block alpha)})
                 trainer (t/trainer model
                                    (t/config {:loss (loss/l2)
-                                              :initializer (init/ones)}))
+                                              :initializer (init/ones)
+                                              :parameter param/weight}))
                 manager (t/get-manager trainer)]
       (let [data (nd/create manager (float-array [-2 0 2]))
             expect (nd/create manager (float-array [-0.8647 0 2]))]
@@ -111,7 +114,8 @@
                                  :block (nn/elu-block alpha)})
                 trainer (t/trainer model
                                    (t/config {:loss (loss/l2)
-                                              :initializer (init/ones)}))
+                                              :initializer (init/ones)
+                                              :parameter param/weight}))
                 manager (t/get-manager trainer)]
       (let [data (nd/create manager (float-array [-2 0 2]))
             expect (nd/create manager (float-array [-0.4323 0 2]))]
@@ -128,7 +132,8 @@
                                :block (nn/selu-block)})
               trainer (t/trainer model
                                  (t/config {:loss (loss/l2)
-                                            :initializer (init/ones)}))
+                                            :initializer (init/ones)
+                                            :parameter param/weight}))
               manager (t/get-manager trainer)]
     (let [data   (nd/create manager (float-array [-2 0 2]))
           expect (nd/create manager (float-array [-1.5202 0 2.1014]))]
@@ -144,7 +149,8 @@
                                :block (nn/gelu-block)})
               trainer (t/trainer model
                                  (t/config {:loss (loss/l2)
-                                            :initializer (init/ones)}))
+                                            :initializer (init/ones)
+                                            :parameter param/weight}))
               manager (t/get-manager trainer)]
     (let [data   (nd/create manager (float-array [-2 0 2]))
           expect (nd/create manager (float-array [-0.0454 0 1.9546]))]
@@ -161,7 +167,8 @@
                                  :block (nn/swish-block beta)})
                 trainer (t/trainer model
                                    (t/config {:loss (loss/l2)
-                                              :initializer (init/ones)}))
+                                              :initializer (init/ones)
+                                              :parameter param/weight}))
                 manager (t/get-manager trainer)]
       (let [data   (nd/create manager (float-array [1 5 0.3 0.08]))
             expect (nd/create manager (float-array [0.7311 4.9665 0.1723 0.0416]))]
@@ -177,7 +184,8 @@
                                :block (nn/mish-block)})
               trainer (t/trainer model
                                  (t/config {:loss (loss/l2)
-                                            :initializer (init/ones)}))
+                                            :initializer (init/ones)
+                                            :parameter param/weight}))
               manager (t/get-manager trainer)]
     (let [data   (nd/create manager (float-array [1, 5, 0.3, 0.08]))
           expect (nd/create manager (float-array [0.9558, 5, 0.253, 0.0628]))]
@@ -193,7 +201,8 @@
                                :block (nn/prelu-block)})
               trainer (t/trainer model
                                  (t/config {:loss (loss/l2)
-                                            :initializer (init/ones)}))
+                                            :initializer (init/ones)
+                                            :parameter param/weight}))
               manager (t/get-manager trainer)]
     (t/initialize trainer (nd/shape 3))
     (let [data   (nd/create manager (float-array [-1, 0, 2]))

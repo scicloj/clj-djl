@@ -17,7 +17,7 @@
                                    :initializer (init/ones)})
               grad-col (t/gradient-collector trainer)]
     (let [lhs (nd/create manager (float-array [1 2 3 4]))
-          _ (nd/attach-gradient lhs)
+          _ (nd/set-requires-gradient lhs true)
           result (nd/+ lhs 2)
           _ (t/backward grad-col result)
           expected (nd/create manager (float-array [3 4 5 6]))

@@ -12,7 +12,8 @@
             [clj-djl.training.tracker :as tracker]
             [clj-djl.training.listener :as listener]
             [clj-djl.ndarray :as nd]
-            [tech.v3.datatype.functional :as dfn]))
+            [tech.v3.datatype.functional :as dfn]
+            [clj-djl.nn.parameter :as param]))
 
 (defn count-small [seq]
   (count
@@ -52,7 +53,8 @@
 
 (def  learning-rate 0.05)
 (defn net [] (nn/sequential {:blocks (nn/linear {:units 1})
-                         :initializer (nn/normal-initializer)}))
+                         :initializer (nn/normal-initializer)
+                             :parameter param/weight}))
 (defn cfg [] (t/training-config {:loss (loss/l2-loss)
                              :optimizer (optimizer/sgd
                                          {:tracker (tracker/fixed learning-rate)})

@@ -6,7 +6,8 @@
    [clj-djl.model :as m]
    [clj-djl.nn :as nn]
    [clj-djl.training.loss :as loss]
-   [clj-djl.training.initializer :as init]))
+   [clj-djl.training.initializer :as init]
+   [clj-djl.nn.parameter :as param]))
 
 (deftest linear-test
   (let [outsize 3
@@ -15,7 +16,8 @@
                                 :block (nn/linear {:units outsize})})
                 trainer (t/trainer {:model model
                                     :loss (loss/l2)
-                                    :initializer (init/ones)})]
+                                    :initializer (init/ones)
+                                    :parameter param/weight})]
       (t/initialize trainer input-shape)
       (let [ndm  (t/get-manager trainer)
             data (nd/create ndm (float-array [1 2 3 4]) input-shape)

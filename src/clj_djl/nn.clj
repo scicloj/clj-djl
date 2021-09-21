@@ -189,8 +189,8 @@
 (defn identity-block []
   (Blocks/identityBlock))
 
-(defn set-initializer [net initializer]
-  (.setInitializer net initializer)
+(defn set-initializer [net initializer parameter]
+  (.setInitializer net initializer parameter)
   net)
 
 (defn normal-initializer
@@ -233,11 +233,11 @@
 (defn sequential
   ([]
    (SequentialBlock.))
-  ([{:keys [blocks initializer]}]
+  ([{:keys [blocks initializer parameter]}]
    (cond-> (SequentialBlock.)
      blocks (.addAll (into-array ai.djl.nn.Block (if (instance? ai.djl.nn.Block blocks)
                                                    [blocks]
                                                    blocks)))
-     initializer (set-initializer initializer))))
+     initializer (set-initializer initializer parameter))))
 
 (def sequential-block sequential)

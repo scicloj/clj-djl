@@ -518,11 +518,11 @@
 (defn head [ndlist]
   (.head ndlist))
 
-(defn attach-gradient
+(defn set-requires-gradient
   "Attaches a gradient NDArray to this NDArray and marks it so
   GradientCollector.backward(NDArray) can compute the gradient with respect to it."
-  [ndarray]
-  (.attachGradient ndarray))
+  [ndarray requires-grad]
+  (.setRequiresGradient ndarray requires-grad))
 
 (defn get-gradient
   "Returns the gradient NDArray attached to this NDArray."
