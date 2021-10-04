@@ -233,3 +233,6 @@
            :validate-loss (.getValidateLoss result))))
 
 (def get-training-result get-result)
+
+(defn get-model [trainer]
+  (.getModel trainer))

@@ -6,17 +6,18 @@
             [clj-djl.nn :as nn]
             [clj-djl.training.loss :as loss]
             [clj-djl.training.initializer :as init]
-            [clj-djl.nn.parameter :as param])
-  (:import (ai.djl.training.initializer Initializer)))
+            [clj-djl.training.parameter :as param]))
 
 (deftest flatten-block
-  (let [config (-> (loss/l2-loss) (t/new-default-training-config) (t/opt-initializer Initializer/ONES param/weight))]
-    (with-open [model (-> (m/new-instance "model")
-                          (m/set-block (nn/batch-flatten-block)))
-                trainer (m/new-trainer model config)]
-      (let [manager (t/get-manager trainer)
-            param-store (t/parameter-store manager false)
-            data (nd/random-uniform manager 0 255 [10 28 28])
+  (let [cfg (t/config {:loss (loss/l2-loss)
+                       :initializer (init/ones)
+                       :parameter param/weight})]
+    (with-open [model (m/model {:name "model"
+                                :block (nn/batch-flatten-block)})
+                trainer (m/trainer model cfg)]
+      (let [ndm (t/get-manager trainer)
+            param-store (t/parameter-store ndm false)
+            data (nd/random-uniform ndm 0 255 [10 28 28])
             expected (nd/reshape data [10 (* 28 28)])
             result (-> model m/get-block (nn/forward param-store (nd/ndlist data) true) nd/head)]
         (is (= result expected))))))

@@ -10,7 +10,8 @@
                             identity to-array
                             min max concat
                             get set
-                            flatten]))
+                            flatten
+                            sort]))
 
 (defn base-manager []
   (NDManager/newBaseManager))
@@ -381,6 +382,20 @@
   ([^NDArray ndarray axis]
    (.argMin ndarray axis)))
 
+(defn argsort
+  ([^NDArray ndarray]
+   (.argSort ndarray))
+  ([^NDArray ndarray axis]
+   (.argSort ndarray axis))
+  ([^NDArray ndarray axis ascending]
+   (.argSort ndarray axis ascending)))
+
+(defn sort
+  ([^NDArray ndarray]
+   (.sort ndarray))
+  ([^NDArray ndarray axis]
+   (.sort ndarray axis)))
+
 (defn all-close
   ([array0 array1]
    (.allClose array0 array1))
@@ -682,3 +697,8 @@
    (.linspace manager start stop n endpoint))
   ([manager start stop n endpoint device]
    (.linspace manager start stop n endpoint device)))
+
+(defn acos
+  "Returns the inverse trigonometric cosine of this NDArray element-wise."
+  [ndarray]
+  (.acos ndarray))
