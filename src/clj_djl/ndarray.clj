@@ -702,3 +702,7 @@
   "Returns the inverse trigonometric cosine of this NDArray element-wise."
   [ndarray]
   (.acos ndarray))
+
+(defn sqrt
+  [ndarray]
+  (.sqrt ndarray))
