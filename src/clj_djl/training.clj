@@ -214,6 +214,10 @@
   [ndarray]
   (.getGradient ndarray))
 
+(defn stop-gradient
+  [ndarray]
+  (.stopGradient ndarray))
+
 (defn backward [gc target]
   (.backward gc target))
 
