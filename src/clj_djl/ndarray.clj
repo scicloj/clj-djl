@@ -276,6 +276,12 @@
     (NDArrays/stack ndlist)
     (NDArrays/stack ndlist axis)))
 
+(defmethod stack java.util.Collection
+  [ndarrays & [axis]]
+  (if (nil? axis)
+    (NDArrays/stack (ndlist ndarrays))
+    (NDArrays/stack (ndlist ndarrays) axis)))
+
 (defmethod stack clojure.lang.PersistentVector
   [coll & [axis]]
   (if (nil? axis)
@@ -304,6 +310,7 @@
    (.randomUniform manager low high (shape shape-) (datatype datatype-) device)))
 
 (defn random-multinomial
+  "Draw samples from a multinomial distribution. "
   ([ndmanager n ndarray]
    (.randomMultinomial ndmanager n ndarray))
   ([ndmanager n ndarray shape-]
