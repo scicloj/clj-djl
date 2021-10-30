@@ -92,7 +92,7 @@
         indptr (long-array [0 2 2 3])
         indices (long-array [0 2 1])
         nd (.createCSR ndm buf indptr indices (nd/shape 3 4))
-        array (.toFloatArray nd)]
+        array (.toFloatArray (.toDense nd))]
     (is (= (aget array 0) (aget expected 0)))
     (is (= (aget array 2) (aget expected 1)))
     (is (= (aget array 9) (aget expected 2)))
@@ -104,7 +104,7 @@
         indptr (long-array [0 2 2 3])
         indices (long-array [0 2 1])
         nd (nd/create-csr ndm buf indptr indices (nd/shape 3 4))
-        array (nd/to-array nd)]
+        array (nd/to-array (.toDense nd))]
     (is (= (aget array 0) (expected 0)))
     (is (= (aget array 2) (expected 1)))
     (is (= (aget array 9) (expected 2)))
@@ -117,7 +117,7 @@
         indices [0 2 1]
         shape [3 4]
         nd (nd/create-csr ndm buf indptr indices shape)
-        array (nd/to-array nd)]
+        array (nd/to-array (.toDense nd))]
     (is (= (aget array 0) (expected 0)))
     (is (= (aget array 2) (expected 1)))
     (is (= (aget array 9) (expected 2)))
@@ -126,7 +126,7 @@
   (let [ndm (nd/new-base-manager)
         expected [7 8 9]
         nd (nd/create-csr ndm [7 8 9] [0 2 2 3] [0 2 1] [3 4])
-        array (nd/to-vec nd)]
+        array (nd/to-vec (.toDense nd))]
     (is (= (array 0) (expected 0)))
     (is (= (array 2) (expected 1)))
     (is (= (array 9) (expected 2)))
@@ -138,7 +138,7 @@
           buf (FloatBuffer/wrap (float-array expected))
           indices (long-array [0 1 3])
           nd (nd/create-row-sparse ndm buf (nd/shape 3 2) indices (nd/shape 4 2))
-          array (nd/to-array nd)]
+          array (nd/to-array (.toDense nd))]
       (is (= (aget array 0) (expected 0)))
       (is (= (aget array 1) (expected 1)))
       (is (= (aget array 2) (expected 2)))
@@ -149,7 +149,7 @@
     (let [expected [1 2 3 4 5 6]
           indices [0 1 3]
           nd (nd/create-row-sparse ndm expected (nd/shape 3 2) indices (nd/shape 4 2))
-          array (nd/to-array nd)]
+          array (nd/to-array (.toDense nd))]
       (is (= (aget array 0) (expected 0)))
       (is (= (aget array 1) (expected 1)))
       (is (= (aget array 2) (expected 2)))
@@ -160,7 +160,7 @@
     (let [expected [1 2 3 4 5 6]
           indices [0 1 3]
           nd (nd/create-row-sparse ndm expected [3 2] indices [4 2])
-          array (nd/to-array nd)]
+          array (nd/to-array (.toDense nd))]
       (is (= (aget array 0) (expected 0)))
       (is (= (aget array 1) (expected 1)))
       (is (= (aget array 2) (expected 2)))

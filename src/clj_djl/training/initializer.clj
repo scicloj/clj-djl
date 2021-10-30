@@ -1,6 +1,7 @@
 (ns clj-djl.training.initializer
   (:import [ai.djl.training.initializer Initializer
-            XavierInitializer XavierInitializer$RandomType XavierInitializer$FactorType]))
+            XavierInitializer XavierInitializer$RandomType XavierInitializer$FactorType
+            NormalInitializer]))
 
 
 (defn ones
@@ -22,3 +23,11 @@
                        magnitude)))
 
 (def new-xavier xavier)
+
+(defn normal-initializer
+  ([]
+   (NormalInitializer.))
+  ([sigma]
+   (NormalInitializer. sigma)))
+
+(def new-normal-initializer normal-initializer)

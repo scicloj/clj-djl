@@ -1,8 +1,8 @@
 (ns clj-djl.device
   (:import [ai.djl Device]))
 
-(defn default-device []
-  (Device/defaultDevice))
+(defn cpu []
+  (Device/cpu))
 
-(defn get-devices [maxgpu]
-  (Device/getDevices maxgpu))
+(defn gpu []
+  (Device/gpu))

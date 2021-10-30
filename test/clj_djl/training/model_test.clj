@@ -2,13 +2,14 @@
   (:require [clojure.test :refer [deftest is]]
             [clj-djl.nn :as nn]
             [clj-djl.model :as m]
-            [clj-djl.training.initializer :as initializer]))
+            [clj-djl.training.initializer :as initializer]
+            [clj-djl.nn.parameter :as param]))
 
 (deftest model-test
   (let [block (-> (nn/sequential-block)
                   (nn/add (nn/cov2d-block {:kernel-shape [1 1] :filters 10}))
                   (nn/add (nn/batchnorm-block))
-                  (nn/set-initializer (initializer/new-xavier)))]
+                  (nn/set-initializer (initializer/new-xavier) param/weight))]
     (with-open [savemodel (m/new-model {:name "save-model"})
                 loadmodel (m/new-model {:name "load-model"})]
       (nn/initialize block (m/get-ndmanager savemodel) :float32 [1 3 32 32])

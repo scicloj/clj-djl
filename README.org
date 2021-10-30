@@ -1,11 +1,11 @@
 [[https://clojars.org/clj-djl][https://img.shields.io/clojars/v/clj-djl.svg]]
-[[https://github.com/kimim/clj-djl/actions][https://github.com/kimim/clj-djl/workflows/Clojure%20CI/badge.svg]]
+[[https://github.com/kimim/clj-djl/actions][https://github.com/scicloj/clj-djl/workflows/Clojure%20CI/badge.svg]]
 
 * clj-djl
 
 A Clojure library wrap deep java library(DJL.ai)
 
-[[https://kimim.github.io/clj-djl][API documents]]
+[[https://scicloj.github.io/clj-djl][API documents]]
 
 ** Usage
 
@@ -14,13 +14,13 @@ clj-djl is available as a Maven artifact from Clojars.
 With Leiningen/Boot:
 
 #+begin_src clojure
-[clj-djl "0.1.5"]
+[clj-djl "0.1.6"]
 #+end_src
 
 With Clojure CLI/deps.edn:
 
 #+begin_src clojure
-clj-djl/clj-djl {:mvn/version "0.1.5"}
+clj-djl/clj-djl {:mvn/version "0.1.6"}
 #+end_src
 
 Latest version please refer to:
@@ -48,7 +48,7 @@ lein test
 
 #+begin_src clojure
 {:deps
- {clj-djl/clj-djl       {:mvn/version "0.1.5"}
+ {clj-djl/clj-djl       {:mvn/version "0.1.6"}
   clj-djl/dataframe     {:mvn/version "0.1.2"}}}
 #+end_src
 
@@ -56,7 +56,7 @@ lein test
 
 #+begin_src clojure
 (defproject clj-d2l/house-prices "0.0.1"
-  :dependencies [[clj-djl "0.1.5"]
+  :dependencies [[clj-djl "0.1.6"]
                  [clj-djl/dataframe "0.1.2"]]
   :source-paths ["src"])
 #+end_src
@@ -75,6 +75,7 @@ lein test
    [clj-djl.training.optimizer :as optimizer]
    [clj-djl.training.tracker :as tracker]
    [clj-djl.training.listener :as listener]
+   [clj-djl.nn.parameter :as param]
    [clj-djl.dataframe :as df]
    [clj-djl.dataframe.column-filters :as cf]
    [clj-djl.dataframe.functional :as dfn]))
@@ -129,7 +130,8 @@ lein test
                            :batchsize batchsize
                            :shuffle false})
         net (nn/sequential {:blocks (nn/linear {:units 1})
-                            :initializer (nn/normal-initializer)})
+                            :initializer (nn/normal-initializer)
+                            :parameter param/weight})
         cfg (t/training-config {:loss (loss/l2-loss)
                                 :optimizer (optimizer/sgd
                                             {:tracker (tracker/fixed learning-rate)})
@@ -150,7 +152,7 @@ lein test
 ;;     :validate-loss ##NaN}
 #+end_src
 
-[[https://github.com/kimim/clj-d2l/blob/master/figure/house-prices.svg]]
+[[https://github.com/scicloj/clj-d2l/blob/master/figure/house-prices.svg]]
 
 * License
 

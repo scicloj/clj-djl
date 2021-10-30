@@ -7,7 +7,9 @@
             [clj-djl.training.loss :as l]
             [clj-djl.training.optimizer :as optimizer]
             [clj-djl.training.dataset :as dataset]
-            [clj-djl.training.tracker :as tracker])
+            [clj-djl.training.tracker :as tracker]
+            [clj-djl.nn.parameter :as param]
+            [clj-djl.training.initializer :as init])
   (:import [ai.djl.training.initializer Initializer]
            [ai.djl.training.listener TrainingListener EvaluatorTrainingListener]))
 
@@ -18,12 +20,13 @@
     (with-open [trainer (t/new-trainer model
                                        (t/default-training-config
                                         {:loss (l/l2-loss)
-                                         :initializer Initializer/ONES}))
+                                         :initializer (init/ones)
+                                         :parameter param/weight}))
                 gc (t/new-gradient-collector trainer)]
       (let [lhs (nd/create ndm (float-array [6 -9 -12 15 0 4]) [2 3])
             rhs (nd/create ndm (float-array [2 3 -4]) [3 1])
             expected (nd/create ndm (float-array [24 -54 96 60 0 -32]) [2 3])]
-        (t/attach-gradient lhs)
+        (t/set-requires-gradient lhs true)
         (let [result (nd/dot (nd/* lhs lhs) rhs)]
           (t/backward gc result)
           (let [grad (t/get-gradient lhs)]
@@ -36,12 +39,13 @@
               ndm (nd/new-base-manager)
               trainer (t/new-trainer {:model model
                                       :loss (l/l2-loss)
-                                      :initializer Initializer/ONES})
+                                      :initializer (init/ones)
+                                      :parameter param/weight})
               gc (t/new-gradient-collector trainer)]
     (let [lhs (nd/create ndm (float-array [6 -9 -12 15 0 4]) [2 3])
           rhs (nd/create ndm (float-array [2 3 -4]) [3 1])
           expected (nd/create ndm (float-array [24 -54 96 60 0 -32]) [2 3])]
-      (t/attach-gradient lhs)
+      (t/set-requires-gradient lhs true)
       (let [result (nd/dot (nd/* lhs lhs) rhs)]
         (t/backward gc result)
         (let [grad (t/get-gradient lhs)]
@@ -56,7 +60,8 @@
         optimizer (optimizer/sgd {:tracker (tracker/fixed 0.03)})
         config (t/default-training-config {:loss (l/l2-loss)
                                            :listeners [(EvaluatorTrainingListener.)]
-                                           :initializer (Initializer/ONES)
+                                           :initializer (init/ones)
+                                           :parameter param/weight
                                            :optimizer optimizer})]
     (with-open [model (m/new-model {:name "linear"
                                     :block (nn/linear-block {:units 1})})

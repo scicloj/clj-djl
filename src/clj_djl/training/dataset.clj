@@ -54,7 +54,7 @@
   (.setData builder (into-array NDArray data))
   builder)
 
-(defn get-data [ds manager]
+(defn- get-data-iter [ds manager]
   (.getData ds manager))
 
 (defn iter-seq
@@ -66,20 +66,20 @@
       (cons (.next iter) (iter-seq iterable iter))))))
 
 (defn get-data-iterator [ds manager]
-  (iter-seq (get-data ds manager)))
+  (iter-seq (get-data-iter ds manager)))
 
 
 (defn opt-labels [builder & labels]
   (.optLabels builder (into-array NDArray labels))
   builder)
 
-(defn get-batch-data [batch]
+(defn get-data [batch]
   (.getData batch))
 
-(defn get-batch-labels [batch]
+(defn get-labels [batch]
   (.getLabels batch))
 
-(defn close-batch [batch]
+(defn close [batch]
   (.close batch))
 
 (defmulti opt-usage

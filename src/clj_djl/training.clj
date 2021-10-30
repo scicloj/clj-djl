@@ -19,7 +19,7 @@
 
 (def new-progress-bar progress-bar)
 
-(defn config [{:keys [loss devices data-manager initializer optimizer evaluator listeners]}]
+(defn config [{:keys [loss devices data-manager initializer parameter optimizer evaluator listeners]}]
   (cond-> (DefaultTrainingConfig. loss)
     listeners (.addTrainingListeners (if (sequential? listeners)
                                        (into-array TrainingListener listeners)
@@ -27,7 +27,7 @@
     evaluator (.addEvaluator evaluator)
     devices (.optDevices devices)
     data-manager (.optDataManager data-manager)
-    initializer (.optInitializer initializer)
+    initializer (.optInitializer initializer parameter)
     optimizer (.optOptimizer optimizer)))
 
 (def training-config config)
@@ -38,8 +38,8 @@
 
 (def new-training-config new-default-training-config)
 
-(defn opt-initializer [config initializer]
-  (.optInitializer config initializer))
+(defn opt-initializer [config initializer parameter]
+  (.optInitializer config initializer parameter))
 
 (defn opt-optimizer [config optimizer]
   (.optOptimizer config optimizer))
@@ -123,12 +123,15 @@
 (defn trainer
   ([model config]
    (.newTrainer model config))
-  ([{:keys [model loss devices data-manager initializer optimizer]}]
+  ([{:keys [model loss devices data-manager initializer parameter optimizer listeners]}]
    (.newTrainer model
                 (cond-> (DefaultTrainingConfig. loss)
+                  listeners (.addTrainingListeners (if (sequential? listeners)
+                                                     (into-array TrainingListener listeners)
+                                                     listeners))
                   devices (.optDevices devices)
                   data-manager (.optDataManager data-manager)
-                  initializer (.optInitializer initializer)
+                  initializer (.optInitializer initializer parameter)
                   optimizer (.optOptimizer optimizer)))))
 
 (def new-trainer trainer)
@@ -205,16 +208,18 @@
 (defn validate-batch [trainer batch]
   (EasyTrain/validateBatch trainer batch))
 
-(defn attach-gradient
-  "Attaches a gradient NDArray to this NDArray and marks it so
-  GradientCollector.backward(NDArray) can compute the gradient with respect to it."
-  [ndarray]
-  (.attachGradient ndarray))
+(defn set-requires-gradient
+  [ndarray requires-grad]
+  (.setRequiresGradient ndarray requires-grad))
 
 (defn get-gradient
   "Returns the gradient NDArray attached to this NDArray."
   [ndarray]
   (.getGradient ndarray))
+
+(defn stop-gradient
+  [ndarray]
+  (.stopGradient ndarray))
 
 (defn backward [gc target]
   (.backward gc target))
@@ -235,3 +240,6 @@
            :validate-loss (.getValidateLoss result))))
 
 (def get-training-result get-result)
+
+(defn get-model [trainer]
+  (.getModel trainer))

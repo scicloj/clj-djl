@@ -10,7 +10,8 @@
                             identity to-array
                             min max concat
                             get set
-                            flatten]))
+                            flatten
+                            sort]))
 
 (defn base-manager []
   (NDManager/newBaseManager))
@@ -38,9 +39,6 @@
 
 (defn get-device [ndarray]
   (.getDevice ndarray))
-
-(defn default-device []
-  (Device/defaultDevice))
 
 (defn get-shape [ndarray]
   (.getShape ndarray))
@@ -275,6 +273,12 @@
     (NDArrays/stack ndlist)
     (NDArrays/stack ndlist axis)))
 
+(defmethod stack java.util.Collection
+  [ndarrays & [axis]]
+  (if (nil? axis)
+    (NDArrays/stack (ndlist ndarrays))
+    (NDArrays/stack (ndlist ndarrays) axis)))
+
 (defmethod stack clojure.lang.PersistentVector
   [coll & [axis]]
   (if (nil? axis)
@@ -303,6 +307,7 @@
    (.randomUniform manager low high (shape shape-) (datatype datatype-) device)))
 
 (defn random-multinomial
+  "Draw samples from a multinomial distribution. "
   ([ndmanager n ndarray]
    (.randomMultinomial ndmanager n ndarray))
   ([ndmanager n ndarray shape-]
@@ -380,6 +385,20 @@
    (.argMin ndarray))
   ([^NDArray ndarray axis]
    (.argMin ndarray axis)))
+
+(defn argsort
+  ([^NDArray ndarray]
+   (.argSort ndarray))
+  ([^NDArray ndarray axis]
+   (.argSort ndarray axis))
+  ([^NDArray ndarray axis ascending]
+   (.argSort ndarray axis ascending)))
+
+(defn sort
+  ([^NDArray ndarray]
+   (.sort ndarray))
+  ([^NDArray ndarray axis]
+   (.sort ndarray axis)))
 
 (defn all-close
   ([array0 array1]
@@ -518,11 +537,11 @@
 (defn head [ndlist]
   (.head ndlist))
 
-(defn attach-gradient
+(defn set-requires-gradient
   "Attaches a gradient NDArray to this NDArray and marks it so
   GradientCollector.backward(NDArray) can compute the gradient with respect to it."
-  [ndarray]
-  (.attachGradient ndarray))
+  [ndarray requires-grad]
+  (.setRequiresGradient ndarray requires-grad))
 
 (defn get-gradient
   "Returns the gradient NDArray attached to this NDArray."
@@ -682,3 +701,12 @@
    (.linspace manager start stop n endpoint))
   ([manager start stop n endpoint device]
    (.linspace manager start stop n endpoint device)))
+
+(defn acos
+  "Returns the inverse trigonometric cosine of this NDArray element-wise."
+  [ndarray]
+  (.acos ndarray))
+
+(defn sqrt
+  [ndarray]
+  (.sqrt ndarray))
