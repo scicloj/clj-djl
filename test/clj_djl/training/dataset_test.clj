@@ -21,10 +21,10 @@
               manager (m/get-ndmanager model)
               trainer (m/new-trainer model config)]
     (let [dataset (-> (ds/new-array-dataset-builder)
-                      (ds/set-data (nd/arange manager 0 100 1 :int64 (nd/default-device)))
+                      (ds/set-data (nd/arange manager 0 100 1 :int64 (d/cpu)))
                       (ds/set-sampling (ds/batch-sampler (ds/sequence-sampler) 1 false))
                       (ds/build))
-          original (map #(nd/get-element (nd/head (ds/get-batch-data %)))
+          original (map #(nd/get-element (nd/head (ds/get-data %)))
                         (t/iterate-dataset trainer dataset))
           expected (range 0 100)]
       (is (= original expected)))))
@@ -35,10 +35,10 @@
               manager (m/get-ndmanager model)
               trainer (m/new-trainer model config)]
     (let [dataset (-> (ds/new-array-dataset-builder)
-                      (ds/set-data (nd/arange manager 0 10 1 :int64 (nd/default-device)))
+                      (ds/set-data (nd/arange manager 0 10 1 :int64 (d/cpu)))
                       (ds/set-sampling (ds/batch-sampler (ds/sequence-sampler) 1 false))
                       (ds/build))
-          original (map #(nd/get-element (nd/head (ds/get-batch-data %)))
+          original (map #(nd/get-element (nd/head (ds/get-data %)))
                         (t/iterate-dataset trainer dataset))]
       (is (= (count original) 10)))))
 
@@ -47,13 +47,13 @@
                                   :block (nn/identity-block)})
               manager (m/get-ndmanager model)
               trainer (t/new-trainer model config)]
-    (let [data (nd/arange manager 0 100 1 :int64 (d/default-device))
+    (let [data (nd/arange manager 0 100 1 :int64 (d/cpu))
           dataset (-> (ds/array-dataset-builder)
                       (ds/set-data data)
                       (ds/set-sampling (ds/batch-sampler (ds/sequence-sampler) 27 false))
                       (ds/build))
           ;; convert ndarray to vec here, otherwise resource is closed
-          remlist (map #(nd/to-vec (nd/singleton-or-throw (ds/get-batch-data %)))
+          remlist (map #(nd/to-vec (nd/singleton-or-throw (ds/get-data %)))
                        (t/iterate-dataset trainer dataset))]
       (is (= (count remlist) 4))
       (is (= (first remlist) (range 0 27)))))
@@ -61,13 +61,13 @@
                                   :block (nn/identity-block)})
               manager (m/get-ndmanager model)
               trainer (t/new-trainer model config)]
-    (let [data (nd/arange manager 0 100 1 :int64 (d/default-device))
+    (let [data (nd/arange manager 0 100 1 :int64 (d/cpu))
           dataset (-> (ds/array-dataset-builder)
                       (ds/set-data data)
                       (ds/set-sampling (ds/batch-sampler (ds/sequence-sampler) 33 true))
                       (ds/build))
           ;; convert ndarray to vec here, otherwise resource is closed
-          remlist (map #(nd/to-vec (nd/singleton-or-throw (ds/get-batch-data %)))
+          remlist (map #(nd/to-vec (nd/singleton-or-throw (ds/get-data %)))
                        (t/iterate-dataset trainer dataset))]
       (is (= (count remlist) 3))
       (is (= (last remlist) (range 66 99)))))
@@ -75,26 +75,26 @@
                                   :block (nn/identity-block)})
               manager (m/get-ndmanager model)
               trainer (t/new-trainer model config)]
-    (let [data (nd/arange manager 0 100 1 :int64 (d/default-device))
+    (let [data (nd/arange manager 0 100 1 :int64 (d/cpu))
           dataset (-> (ds/array-dataset-builder)
                       (ds/set-data data)
                       (ds/set-sampling (ds/batch-sampler (ds/sequence-sampler) 101 true))
                       (ds/build))
           ;; convert ndarray to vec here, otherwise resource is closed
-          remlist (map #(nd/to-vec (nd/singleton-or-throw (ds/get-batch-data %)))
+          remlist (map #(nd/to-vec (nd/singleton-or-throw (ds/get-data %)))
                        (t/iterate-dataset trainer dataset))]
       (is (empty? remlist))))
   (with-open [model (m/new-model {:name "model"
                                   :block (nn/identity-block)})
               manager (m/get-ndmanager model)
               trainer (t/new-trainer model config)]
-    (let [data (nd/arange manager 0 100 1 :int64 (d/default-device))
+    (let [data (nd/arange manager 0 100 1 :int64 (d/cpu))
           dataset (-> (ds/array-dataset-builder)
                       (ds/set-data data)
                       (ds/set-sampling (ds/batch-sampler (ds/sequence-sampler) 101 false))
                       (ds/build))
           ;; convert ndarray to vec here, otherwise resource is closed
-          remlist (map #(nd/to-vec (nd/singleton-or-throw (ds/get-batch-data %)))
+          remlist (map #(nd/to-vec (nd/singleton-or-throw (ds/get-data %)))
                        (t/iterate-dataset trainer dataset))]
       (is (= 1 (count remlist)))
       (is (= 100 (count (first remlist))))
@@ -115,9 +115,9 @@
       (doseq [[index batch]
               (map list (range 0 100 20) (t/iterate-dataset trainer dataset))]
         (is (= (nd/reshape (nd/arange manager (* 2 index) (+ (* 2 index) 40)) 20 2)
-               (nd/singleton-or-throw (ds/get-batch-data batch))))
+               (nd/singleton-or-throw (ds/get-data batch))))
         (is (= (nd/reshape (nd/arange manager index (+ index 20)) 20)
-               (nd/singleton-or-throw (ds/get-batch-labels batch)))))))
+               (nd/singleton-or-throw (ds/get-labels batch)))))))
   (with-open [model (m/new-model {:name "model"
                                   :block (nn/identity-block)})
               manager (m/get-ndmanager model)
@@ -134,14 +134,14 @@
         (if (not= index 90)
           (do
             (is (= (nd/reshape (nd/arange manager (* 2 index) (+ (* 2 index) 30)) 15 2)
-                   (nd/singleton-or-throw (ds/get-batch-data batch))))
+                   (nd/singleton-or-throw (ds/get-data batch))))
             (is (= (nd/reshape (nd/arange manager index (+ index 15)) 15)
-                   (nd/singleton-or-throw (ds/get-batch-labels batch)))))
+                   (nd/singleton-or-throw (ds/get-labels batch)))))
           (do
             (is (= (nd/reshape (nd/arange manager (* 2 index) (+ (* 2 index) 20)) 10 2)
-                   (nd/singleton-or-throw (ds/get-batch-data batch))))
+                   (nd/singleton-or-throw (ds/get-data batch))))
             (is (= (nd/reshape (nd/arange manager index (+ index 10)) 10)
-                   (nd/singleton-or-throw (ds/get-batch-labels batch)))))))))
+                   (nd/singleton-or-throw (ds/get-labels batch)))))))))
   (with-open [model (m/new-model {:name "model"
                                   :block (nn/identity-block)})
               manager (m/get-ndmanager model)
@@ -154,11 +154,11 @@
                       (ds/build))]
       (doseq [[index batch]
               (map list (range 0 100 10) (t/iterate-dataset trainer dataset))]
-        (is (= 2 (count (ds/get-batch-data batch))))
+        (is (= 2 (count (ds/get-data batch))))
         (is (= (nd/reshape (nd/arange manager (* 2 index) (+ (* 2 index) 20)) 10 2)
-               (first (ds/get-batch-data batch))))
+               (first (ds/get-data batch))))
         (is (= (nd/reshape (nd/arange manager (* 3 index) (+ (* 3 index) 30)) 10 3)
-               (last (ds/get-batch-data batch))))))))
+               (last (ds/get-data batch))))))))
 
 ;; TODO
 #_(deftest multithreading-test)

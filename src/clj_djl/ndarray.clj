@@ -40,9 +40,6 @@
 (defn get-device [ndarray]
   (.getDevice ndarray))
 
-(defn default-device []
-  (Device/defaultDevice))
-
 (defn get-shape [ndarray]
   (.getShape ndarray))
 

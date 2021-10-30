@@ -123,9 +123,12 @@
 (defn trainer
   ([model config]
    (.newTrainer model config))
-  ([{:keys [model loss devices data-manager initializer parameter optimizer]}]
+  ([{:keys [model loss devices data-manager initializer parameter optimizer listeners]}]
    (.newTrainer model
                 (cond-> (DefaultTrainingConfig. loss)
+                  listeners (.addTrainingListeners (if (sequential? listeners)
+                                                     (into-array TrainingListener listeners)
+                                                     listeners))
                   devices (.optDevices devices)
                   data-manager (.optDataManager data-manager)
                   initializer (.optInitializer initializer parameter)
