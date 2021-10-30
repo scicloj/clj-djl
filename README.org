@@ -1,11 +1,11 @@
 [[https://clojars.org/clj-djl][https://img.shields.io/clojars/v/clj-djl.svg]]
-[[https://github.com/kimim/clj-djl/actions][https://github.com/kimim/clj-djl/workflows/Clojure%20CI/badge.svg]]
+[[https://github.com/kimim/clj-djl/actions][https://github.com/scicloj/clj-djl/workflows/Clojure%20CI/badge.svg]]
 
 * clj-djl
 
 A Clojure library wrap deep java library(DJL.ai)
 
-[[https://kimim.github.io/clj-djl][API documents]]
+[[https://scicloj.github.io/clj-djl][API documents]]
 
 ** Usage
 
@@ -152,7 +152,7 @@ lein test
 ;;     :validate-loss ##NaN}
 #+end_src
 
-[[https://github.com/kimim/clj-d2l/blob/master/figure/house-prices.svg]]
+[[https://github.com/scicloj/clj-d2l/blob/master/figure/house-prices.svg]]
 
 * License
 

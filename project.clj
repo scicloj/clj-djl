@@ -1,6 +1,6 @@
 (defproject clj-djl/clj-djl "0.1.7"
   :description "A clojure lib wraps deep java learning(DJL.ai)"
-  :url "http://github.com/kimim/clj-djl"
+  :url "http://github.com/scicloj/clj-djl"
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.10.3"]
