@@ -12,7 +12,6 @@
                  [ai.djl.mxnet/mxnet-native-auto "1.8.0"]
 
                  [net.mikera/core.matrix "0.62.0"]
-                 [scicloj/metamorph.ml "0.3.0-alpha3"]
                  ;;[ai.djl.pytorch/pytorch-engine "0.8.0"]
                  ;;[ai.djl.pytorch/pytorch-native-auto "1.6.0"]
 

@@ -68,7 +68,6 @@
 (defn get-data-iterator [ds manager]
   (iter-seq (get-data-iter ds manager)))
 
-
 (defn opt-labels [builder & labels]
   (.optLabels builder (into-array NDArray labels))
   builder)
