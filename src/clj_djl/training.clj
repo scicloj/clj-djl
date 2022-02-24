@@ -63,9 +63,9 @@
   ([topk]
    (TopKAccuracy. topk))
   ([index topk]
-   (TopKAccuracy. index topk))
+   (TopKAccuracy. topk))
   ([name index topk]
-   (TopKAccuracy. name index topk)))
+   (TopKAccuracy. name topk)))
 
 (def new-topk-accuracy topk-accuracy)
 
@@ -74,10 +74,10 @@
    (BinaryAccuracy.))
   ([threshold]
    (BinaryAccuracy. threshold))
-  ([acc-name threshold index]
-   (BinaryAccuracy. acc-name threshold index))
-  ([acc-name threshold index axis]
-   (BinaryAccuracy. acc-name threshold index axis)))
+  ([acc-name threshold ]
+   (BinaryAccuracy. acc-name threshold ))
+  ([acc-name threshold axis]
+   (BinaryAccuracy. acc-name threshold axis)))
 
 (def new-binary-accuracy binary-accuracy)
 
