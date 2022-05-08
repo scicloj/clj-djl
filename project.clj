@@ -1,14 +1,14 @@
-(defproject clj-djl/clj-djl "0.1.8-SNAPSHOT"
+(defproject clj-djl/clj-djl "0.1.9"
   :description "A clojure lib wraps deep java learning(DJL.ai)"
   :url "http://github.com/scicloj/clj-djl"
   :license {:name "Apache License, Version 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.html"}
   :dependencies [[org.clojure/clojure "1.10.3"]
                  [org.slf4j/slf4j-api "1.7.32"]
-                 [ai.djl/api "0.15.0"]
-                 [ai.djl/model-zoo "0.15.0"]
-                 [ai.djl/basicdataset "0.15.0"]
-                 [ai.djl.mxnet/mxnet-engine "0.15.0"]
+                 [ai.djl/api "0.16.0"]
+                 [ai.djl/model-zoo "0.16.0"]
+                 [ai.djl/basicdataset "0.16.0"]
+                 [ai.djl.mxnet/mxnet-engine "0.16.0"]
                  [ai.djl.mxnet/mxnet-native-auto "1.8.0"]
 
                  [net.mikera/core.matrix "0.62.0"]]
@@ -17,7 +17,7 @@
 
                  ;;[ai.djl.tensorflow/tensorflow-engine "0.8.0"]
                  ;;[ai.djl.tensorflow/tensorflow-native-auto "2.3.0"]
-                 
+
   :plugins [[lein-localrepo "0.5.4"]]
   :source-paths ["src"]
   :main ^:skip-aot clj-djl.core

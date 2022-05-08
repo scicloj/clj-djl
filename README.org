@@ -9,18 +9,19 @@ A Clojure library wrap deep java library(DJL.ai)
 
 ** Usage
 
-clj-djl is available as a Maven artifact from Clojars.
+clj-djl is available as a Maven artifact from Clojars. Please replace
+~"X.Y.Z"~ with the latest version.
 
 With Leiningen/Boot:
 
 #+begin_src clojure
-[clj-djl "0.1.6"]
+[clj-djl "X.Y.Z"]
 #+end_src
 
 With Clojure CLI/deps.edn:
 
 #+begin_src clojure
-clj-djl/clj-djl {:mvn/version "0.1.6"}
+clj-djl/clj-djl {:mvn/version "X.Y.Z"}
 #+end_src
 
 Latest version please refer to:
@@ -48,7 +49,7 @@ lein test
 
 #+begin_src clojure
 {:deps
- {clj-djl/clj-djl       {:mvn/version "0.1.6"}
+ {clj-djl/clj-djl       {:mvn/version "X.Y.Z"}
   clj-djl/dataframe     {:mvn/version "0.1.2"}}}
 #+end_src
 
@@ -56,7 +57,7 @@ lein test
 
 #+begin_src clojure
 (defproject clj-d2l/house-prices "0.0.1"
-  :dependencies [[clj-djl "0.1.6"]
+  :dependencies [[clj-djl "X.Y.Z"]
                  [clj-djl/dataframe "0.1.2"]]
   :source-paths ["src"])
 #+end_src
