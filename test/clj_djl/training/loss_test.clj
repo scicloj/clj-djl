@@ -50,3 +50,16 @@
                                (-> (loss/sigmoid-binary-cross-entropy)
                                    (loss/evaluate label pred)
                                    (nd/get-element)))))))))
+
+(deftest masked-softmax-cross-entropy-loss
+  (with-open [ndm (nd/new-base-manager)]
+    (let [pred  (nd/ones ndm [3 4 10])
+          label (nd/ones ndm [3 4])
+          valid-lengths (nd/create ndm (int-array [4 2 0]))]
+      (is (-> (loss/masked-softmax-cross-entropy)
+              (loss/evaluate [label valid-lengths] pred)
+              (nd/- (nd/create ndm (float-array [2.3025851 1.1512926 0]) (nd/shape [3 1])))
+              (nd/sum)
+              (nd/get-element)
+              (Math/abs)
+              (< 1e-4))))))

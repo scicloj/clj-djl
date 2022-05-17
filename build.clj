@@ -1,11 +1,11 @@
 (ns build
   (:refer-clojure :exclude [test])
-  (:require [clojure.tools.build.api :as b] ; for b/git-count-revs
+  (:require ;;[clojure.tools.build.api :as b] ; for b/git-count-revs
             [org.corfield.build :as bb]))
 
 (def lib 'clj-djl/clj-djl)
 ;; alternatively, use MAJOR.MINOR.COMMITS:
-;;(def version (format "0.2.%s" (b/git-count-revs nil)))
+;; (def version (format "0.1.%s" (b/git-count-revs nil)))
 (def version "0.1.9")
 
 (defn test "Run the tests." [opts]

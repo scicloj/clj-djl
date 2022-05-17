@@ -12,16 +12,16 @@
 (deftest linear-test
   (testing "default linear block"
     (let [outsize 3
-          input-shape (nd/shape [2 2])]
+          inshape (nd/shape [2 2])]
       (with-open [model (m/model {:name "linear"
                                   :block (nn/linear {:units outsize})})
                   trainer (t/trainer {:model model
                                       :loss (loss/l2)
                                       :initializer (init/ones)
                                       :parameter param/weight})]
-        (t/initialize trainer input-shape)
+        (t/initialize trainer inshape)
         (let [ndm  (t/get-manager trainer)
-              data (nd/create ndm (float-array [1 2 3 4]) input-shape)
+              data (nd/create ndm (float-array [1 2 3 4]) inshape)
               result (->> data nd/ndlist (t/forward trainer) first)
               expected (-> data
                            (nd/dot (nd/transpose (nd/ones ndm (nd/shape [outsize 2]))))
@@ -30,17 +30,32 @@
 
   (testing "linear block without a bias vector"
     (let [outsize 3
-          input-shape (nd/shape [2 2])]
+          inshape (nd/shape [2 2])]
       (with-open [model (m/model {:name "linear"
                                   :block (nn/linear {:units outsize :bias false})})
                   trainer (t/trainer {:model model
                                       :loss (loss/l2)
                                       :initializer (init/ones)
                                       :parameter param/weight})]
-        (t/initialize trainer input-shape)
+        (t/initialize trainer inshape)
         (let [ndm  (t/get-manager trainer)
-              data (nd/create ndm (float-array [1 2 3 4]) input-shape)
+              data (nd/create ndm (float-array [1 2 3 4]) inshape)
               result (->> data nd/ndlist (t/forward trainer) first)
               expected (-> data
                            (nd/dot (nd/transpose (nd/ones ndm (nd/shape [outsize 2])))))]
-          (is (= result expected)))))))
+          (is (= result expected))))))
+
+  (testing "linear block result shape"
+    (let [outsize 10
+          inshape (nd/shape [10 20 12])]
+      (with-open [model (m/model {:name "linear"
+                                  :block (nn/linear {:units outsize})})
+                  trainer (t/trainer {:model model
+                                      :loss (loss/l2)
+                                      :initializer (init/ones)
+                                      :parameter param/weight})]
+        (t/initialize trainer inshape)
+        (let [ndm  (t/get-manager trainer)
+              data (nd/ones ndm inshape)
+              result (->> data nd/ndlist (t/forward trainer) first)]
+          (is (= (nd/shape result) (nd/shape 10 20 10))))))))
