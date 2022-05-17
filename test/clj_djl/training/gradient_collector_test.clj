@@ -33,36 +33,36 @@
             (is (= expected grad))
             (.close grad)
             (is (= expected (t/get-gradient lhs))))))))
+
   ;; simplified version
-  (with-open [model (m/new-model {:name "model"
-                                  :block (nn/identity-block)})
-              ndm (nd/new-base-manager)
-              trainer (t/new-trainer {:model model
-                                      :loss (l/l2-loss)
-                                      :initializer (init/ones)
-                                      :parameter param/weight})
-              gc (t/new-gradient-collector trainer)]
+  (with-open [model (m/model {:name "model"
+                              :block (nn/identity-block)})
+              ndm (nd/base-manager)
+              trainer (t/trainer {:model model
+                                  :loss (l/l2-loss)
+                                  :initializer (init/ones)
+                                  :parameter param/weight})
+              gc (t/gradient-collector trainer)]
     (let [lhs (nd/create ndm (float-array [6 -9 -12 15 0 4]) [2 3])
           rhs (nd/create ndm (float-array [2 3 -4]) [3 1])
           expected (nd/create ndm (float-array [24 -54 96 60 0 -32]) [2 3])]
       (t/set-requires-gradient lhs true)
       (let [result (nd/dot (nd/* lhs lhs) rhs)]
         (t/backward gc result)
-        (let [grad (t/get-gradient lhs)]
+        (let [grad (t/gradient lhs)]
           (is (= expected grad))
           (.close grad)
-          (is (= expected (t/get-gradient lhs))))))))
+          (is (= expected (t/gradient lhs))))))))
 
 (deftest train-test
   (let [ndata 1000
         batchsize 10
         epochs 10
-        optimizer (optimizer/sgd {:tracker (tracker/fixed 0.03)})
         config (t/default-training-config {:loss (l/l2-loss)
                                            :listeners [(EvaluatorTrainingListener.)]
                                            :initializer (init/ones)
                                            :parameter param/weight
-                                           :optimizer optimizer})]
+                                           :optimizer (optimizer/sgd {:tracker (tracker/fixed 0.03)})})]
     (with-open [model (m/new-model {:name "linear"
                                     :block (nn/linear-block {:units 1})})
                 manager (m/get-ndmanager model)]

@@ -217,6 +217,8 @@
   [ndarray]
   (.getGradient ndarray))
 
+(def gradient get-gradient)
+
 (defn stop-gradient
   [ndarray]
   (.stopGradient ndarray))
